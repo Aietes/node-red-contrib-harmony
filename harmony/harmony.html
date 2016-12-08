@@ -1,0 +1,164 @@
+<!-- Copyright (c) 2016 Stefan Krüger, see LICENSE for details.-->
+<!-- Begin H command -->
+<script type="text/x-red" data-template-name="H command">
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Hub</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-activity"><i class="fa fa-lightbulb-o"></i> Activity</label>
+        <input type="text" id="node-input-activity" style="width: 57%;" />
+        <a id="node-input-scan" class="editor-button"><i class="fa fa-search"></i></a>
+    </div>
+    <div class="form-row">
+        <label for="node-input-label"><i class="icon-tag"></i> Label</label>
+        <input type="text" id="node-input-label" style="width: 57%;" disabled/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-command"><i class="icon-tag"></i> Command</label>
+        <input type="text" id="node-input-command" style="width: 57%;" />
+        <a id="node-input-commandscan" class="editor-button"><i class="fa fa-search"></i></a>
+    </div>
+</script>
+<script type="text/x-red" data-help-name="H command">
+    <p>A node to send a <b>Command</b> to a Harmony Hub through Node-RED</p>
+    <p>
+    A Harmony <b>Hub</b> needs to be selected from the list or created by clicking on the edit button. The Harmony Hub 
+    <b>IP</b> address can be autodetected by clicking on the search button in the configuration node.
+	</p>
+	<p>
+	An <b>Activity</b> that is set up on the Harmony Hub needs to be provided, it's identified by its <i>ID</i>. Clicking on the 
+    search button loads the available activities from the provided <b>Hub</b>, and can then be selected from a dropdown list. Switching 
+    back to the imput field will show the <i>ID</i> in the field. The <b>Label</b> field below will show the <b>Activity</b> label.
+	</p>
+	<p>
+    A <b>Command</b> from the selected <b>Activity</b> needs to be provided, it's a stanza <i>query</i>. Clicking on the 
+    the search button loads the available commands from the provided <b>Activity</b>, that can then be selected from a list. Switching 
+    back to the imput field will show the <i>query</i> string in the field.
+	</p>
+    <p>
+    The command configured in the node will be triggered by any input injected into the node, the output slot will return <i>msg.payload = true</i> 
+    if the command was sent successfully.
+	</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('H command',{
+        category: 'harmony',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value:""},
+            server: {type:"harmony-server",required:true},
+            activity: {value:""},
+            label: {value:""},
+            command: {value:""}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "feed.png",
+        label: function() {
+            return this.name||"H command";
+        },
+        oneditprepare: function() {
+
+            var config = RED.nodes.node($('#node-input-server').val());
+
+            function commandSelect() {
+                var current = $('#node-input-command').val();
+                $('#node-input-commandscan').html("<i class='fa fa-search'></i>");
+                $('#node-input-command').replaceWith('<input type="text" id="node-input-command" style="width: 57%;"/>');
+                $('#node-input-command').val(current);
+            }
+
+            function commandInput(){
+                var act_id;
+                if ($('#node-input-activity').prop("tagName") === "INPUT") {
+                    act_id = $('#node-input-activity').val();
+                } else {
+                    act_id = $('#node-input-activity option:selected').val();
+                }
+
+                $('#node-input-command').val("Loading commands...");
+
+                if (config && config.ip && act_id) {
+                    $.get('harmony/commands', { ip: config.ip, activity: act_id } )
+                        .done(function(data) {          
+                            var comms = JSON.parse(data);
+                            if(!comms || comms.length <= 0) {
+                                return;
+                            }
+                            $('#node-input-commandscan').html("<i class='fa fa-i-cursor'></i>");
+                            $('#node-input-command').replaceWith('<select id="node-input-command" style="width: 60%;"></select>');      
+                            comms.forEach(function(comm){
+                                comm.function.forEach(function(item){
+                                    //console.log(item.action.replace(/\:/g, '::'));
+                                    $('#node-input-command').append('<option value="' + encodeURI(item.action.replace(/\:/g, '::')) + '">' + item.label + '</option>');
+                                });
+                            });
+                        }).fail(function(err) {
+                            RED.notify(err.responseText, "error");
+                        });
+                }
+
+            }
+
+            function toggleSelect() {
+                var current = $('#node-input-activity').val();
+                $('#node-input-scan').html("<i class='fa fa-search'></i>");
+                $('#node-input-activity').replaceWith('<input type="text" id="node-input-activity" style="width: 57%;"/>');
+                $('#node-input-activity').val(current);
+            }
+
+            function toggleInput() {
+                var current = $('#node-input-activity').val();
+                $('#node-input-activity').val("Loading activities...")
+                
+                if (config && config.ip) {
+                    $.get('harmony/activities', { ip: config.ip } )
+                        .done(function(data) {
+                            var acts = JSON.parse(data);
+                            $('#node-input-scan').html("<i class='fa fa-i-cursor'></i>");
+                            $('#node-input-activity').replaceWith('<select id="node-input-activity" style="width: 60%;"></select>');
+                            $('#node-input-activity').on('change', function() {
+                                $('#node-input-label').val($('#node-input-activity option:selected').text());
+                            });
+                            if(!acts || acts.length <= 0) {
+                                RED.notify("No activities found.", "error");
+                                return;
+                            }                  
+                            acts.forEach(function(act){
+                                $('#node-input-activity').append('<option value="' + act.id + '">' + act.label + '</option>');
+                            });
+                            $('#node-input-activity').val(current);
+                        }).fail(function(err) {
+                            RED.notify(err.responseText, "error");
+                        });
+                }
+            }
+
+            $('#node-input-scan').click( function() {
+                if ($('#node-input-activity').prop("tagName") === "INPUT") {
+                    toggleInput();
+                } else {
+                    toggleSelect();
+                }
+            });
+
+            $('#node-input-commandscan').click( function() {
+                if ($('#node-input-command').prop("tagName") === "INPUT") {
+                    commandInput();
+                } else {
+                    commandSelect();
+                }
+            });
+
+        }
+    });
+</script>
+<!-- End H command -->
+
+<!-- Begin H activity -->

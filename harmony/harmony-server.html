@@ -1,0 +1,38 @@
+<script type="text/x-red" data-template-name="harmony-server">
+  <div class="form-row">
+      <label for="node-config-input-name"><i class="fa fa-header"></i> Name</label>
+      <input type="text" id="node-config-input-name" />
+  </div>
+  <div class="form-row">
+      <label for="node-config-input-ip"><i class="fa fa-server"></i> IP</label>
+      <input type="text" id="node-config-input-ip" style="width: 60%;"/>
+      <a id="node-config-input-scan" class="editor-button"><i class="fa fa-search"></i></a>
+  </div>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType("harmony-server", {
+    category: "config",
+    defaults: {
+      name: {value:"", required: false},
+      ip: { value:"", required: true},
+    },
+    label: function() {
+      return this.name ? this.name : "Harmony Server";
+    },
+    oneditprepare: function() {
+        $('#node-config-input-scan').click(function() {
+            $.get( 'harmony/server')
+                  .done( function(data) {
+                    var ip = JSON.parse(data);
+                    $('#node-config-input-ip').append('<option value="' + ip + '">' + ip + '</option>');
+                    $('#node-config-input-ip').val(ip);
+                    RED.notify("Harmony Hub with IP " + ip + " found.");
+                  })
+                  .fail(function() {
+                    RED.notify("Something went wrong discovering an Harmony Hub", "error");
+                  });
+        });
+    }
+  });
+</script>
