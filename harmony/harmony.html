@@ -52,10 +52,10 @@
         color: '#a6bbcf',
         defaults: {
             name: {value:""},
-            server: {type:"harmony-server",required:true},
+            server: {type:"harmony-server", required:true},
             activity: {value:""},
             label: {value:""},
-            command: {value:""}
+            command: {value:"", required:true}
         },
         inputs:1,
         outputs:1,
@@ -95,7 +95,6 @@
                             $('#node-input-command').replaceWith('<select id="node-input-command" style="width: 60%;"></select>');      
                             comms.forEach(function(comm){
                                 comm.function.forEach(function(item){
-                                    //console.log(item.action.replace(/\:/g, '::'));
                                     $('#node-input-command').append('<option value="' + encodeURI(item.action.replace(/\:/g, '::')) + '">' + item.label + '</option>');
                                 });
                             });
@@ -162,3 +161,108 @@
 <!-- End H command -->
 
 <!-- Begin H activity -->
+<script type="text/x-red" data-template-name="H activity">
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Hub</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-activity"><i class="fa fa-lightbulb-o"></i> Activity</label>
+        <input type="text" id="node-input-activity" style="width: 57%;" />
+        <a id="node-input-scan" class="editor-button"><i class="fa fa-search"></i></a>
+    </div>
+    <div class="form-row">
+        <label for="node-input-label"><i class="icon-tag"></i> Label</label>
+        <input type="text" id="node-input-label" style="width: 57%;" disabled/>
+    </div>
+</script>
+<script type="text/x-red" data-help-name="H activity">
+    <p>A node to activate an <b>Activity</b> on a Harmony Hub through Node-RED</p>
+    <p>
+    A Harmony <b>Hub</b> needs to be selected from the list or created by clicking on the edit button. The Harmony Hub 
+    <b>IP</b> address can be autodetected by clicking on the search button in the configuration node.
+	</p>
+	<p>
+	An <b>Activity</b> that is set up on the Harmony Hub needs to be provided, it's identified by its <i>ID</i>. Clicking on the 
+    search button loads the available activities from the provided <b>Hub</b>, and can then be selected from a dropdown list. Switching 
+    back to the imput field will show the <i>ID</i> in the field. The <b>Label</b> field below will show the <b>Activity</b> label.
+	</p>
+    <p>
+    To switch off, select <i>PowerOff</i> from the <b>Activity</b> dropdown list, or enter <i>"-1"</i> into the field.
+    </p>
+	<p>
+    The command configured in the node will be triggered by any input injected into the node, the output slot will return <i>msg.payload = true</i> 
+    if the command was sent successfully.
+	</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('H activity',{
+        category: 'harmony',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value:""},
+            server: {type:"harmony-server", required:true},
+            activity: {value:""},
+            label: {value:""},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "feed.png",
+        label: function() {
+            return this.name||"H activity";
+        },
+        oneditprepare: function() {
+
+            var config = RED.nodes.node($('#node-input-server').val());
+
+            function toggleSelect() {
+                var current = $('#node-input-activity').val();
+                $('#node-input-scan').html("<i class='fa fa-search'></i>");
+                $('#node-input-activity').replaceWith('<input type="text" id="node-input-activity" style="width: 57%;"/>');
+                $('#node-input-activity').val(current);
+            }
+
+            function toggleInput() {
+                var current = $('#node-input-activity').val();
+                $('#node-input-activity').val("Loading activities...")
+                
+                if (config && config.ip) {
+                    $.get('harmony/activities', { ip: config.ip } )
+                        .done(function(data) {
+                            var acts = JSON.parse(data);
+                            $('#node-input-scan').html("<i class='fa fa-i-cursor'></i>");
+                            $('#node-input-activity').replaceWith('<select id="node-input-activity" style="width: 60%;"></select>');
+                            $('#node-input-activity').on('change', function() {
+                                $('#node-input-label').val($('#node-input-activity option:selected').text());
+                            });
+                            if(!acts || acts.length <= 0) {
+                                RED.notify("No activities found.", "error");
+                                return;
+                            }                  
+                            acts.forEach(function(act){
+                                $('#node-input-activity').append('<option value="' + act.id + '">' + act.label + '</option>');
+                            });
+                            $('#node-input-activity').val(current);
+                        }).fail(function(err) {
+                            RED.notify(err.responseText, "error");
+                        });
+                }
+            }
+
+            $('#node-input-scan').click( function() {
+                if ($('#node-input-activity').prop("tagName") === "INPUT") {
+                    toggleInput();
+                } else {
+                    toggleSelect();
+                }
+            });
+
+        }
+    });
+</script>
+<!-- End H activtiy -->
