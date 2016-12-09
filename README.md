@@ -43,9 +43,9 @@ A node to send a **Command** to a Harmony Hub through Node-RED.
 
 A Harmony **Hub** needs to be selected from the list or created by clicking on the edit button. The Harmony Hub **IP** address can be autodetected by clicking on the search button in the configuration node.
 
-An **Activity** that is set up on the Harmony Hub needs to be provided, it's identified by its *ID*. Clicking on the search button loads the available activities from the provided **Hub**, and can then be selected from a dropdown list. Switching back to the imput field will show the *ID* in the field. The **Label** field below will show the **Activity** label.
+An **Activity** that is set up on the Harmony Hub needs to be provided, it's identified by its *ID*. Clicking on the search button loads the available activities from the provided **Hub**, which can then be selected from a dropdown list. Switching back to the imput field will show the *ID* in the field. The **Label** field below will show the **Activity** label.
 
-A **Command** from the selected **Activity** needs to be provided, it's a stanza *query*. Clicking on the search button loads the available commands from the provided **Activity**, that can then be selected from a list. Switching back to the imput field will show the *query* string in the field.
+A **Command** from the selected **Activity** needs to be provided, it's a stanza *query*. Clicking on the search button loads the available commands from the provided **Activity**, that can then be selected from a list. Switching back to the input field will show the *query* string in the field.
 
 The command configured in the node will be triggered by any input injected into the node, the output slot will return *msg.payload = true* if the command was sent successfully.
 
@@ -57,13 +57,12 @@ A Harmony **Hub** needs to be selected from the list or created by clicking on t
 **IP** address can be autodetected by clicking on the search button in the configuration node.
 
 An **Activity** that is set up on the Harmony Hub needs to be provided, it's identified by its *ID*. Clicking on the 
-search button loads the available activities from the provided **Hub**, and can then be selected from a dropdown list. Switching 
-back to the imput field will show the *ID* in the field. The **Label** field below will show the **Activity** label.
+search button loads the available activities from the provided **Hub**, which can then be selected from a dropdown list. Switching 
+back to the input field will show the *ID* in the field. The **Label** field below will show the **Activity** label.
 
 To switch off, select *PowerOff* from the **Activity** dropdown list, or enter *"-1"* into the field.
 
-The command configured in the node will be triggered by any input injected into the node, the output slot will return *msg.payload = true* 
-if the command was sent successfully.
+The command configured in the node will be triggered by any input injected into the node, the output slot will return *msg.payload = true* if the command was sent successfully.
 
 ## Built With
 
