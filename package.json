@@ -1,16 +1,18 @@
 {
-    "name"         : "node-red-contrib-harmony",
-    "version"      : "1.0.0",
-    "description"  : "Harmony integration for Node-RED",
-    "dependencies": {
-        "harmonyhubjs-client"  : "1.1.10",
-        "harmonyhubjs-discover": "1.0.2"
-    },
-    "keywords": [ "node-red" ],
-    "node-red"     : {
-        "nodes": {
-            "harmony": "harmony/harmony.js",
-            "harmony-server": "harmony/harmony-server.js"
-        }
+  "name": "node-red-contrib-harmony",
+  "version": "1.0.1",
+  "description": "Harmony integration for Node-RED",
+  "dependencies": {
+    "harmonyhubjs-client": "1.1.10",
+    "harmonyhubjs-discover": "1.0.2"
+  },
+  "keywords": [
+    "node-red"
+  ],
+  "node-red": {
+    "nodes": {
+      "harmony": "harmony/harmony.js",
+      "harmony-server": "harmony/harmony-server.js"
     }
+  }
 }
