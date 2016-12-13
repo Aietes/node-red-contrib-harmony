@@ -1,5 +1,3 @@
-var harmony = require('harmonyhubjs-client');
-
 module.exports = function(RED) {
     function HarmonySendCommand(n) {
         RED.nodes.createNode(this,n);
@@ -15,6 +13,14 @@ module.exports = function(RED) {
 
         if(!node.server) return;
 
+        function sendCommand(){
+            node.server.harmony.send('holdAction', 'action=' + action + ':status=press')
+            .catch(function(e){
+                node.send( {payload: false} );
+                console.log("Error: " + e);
+            });
+        }
+
         node.on('input', function(msg) {
             try {
                 msg.payload = JSON.parse(msg.payload);
@@ -22,28 +28,12 @@ module.exports = function(RED) {
 
             }
 
-            function sendCommand(harmony, action){        
-                harmony.send('holdAction', 'action=' + action + ':status=press').catch(function(e){
-                    console.log("Error: " + e);
-                });
-            }
-
-            function closeConnection(harmony, node){
-                harmony.end();
-                node.send({ payload: true });
-            }
-
             if(!node.command || !node.server) {
-                msg.payload = false;
+                node.send( {payload: false} );
             } else {
-                harmony(node.server.ip).then(function(harmony) {
-                    for (var i = 0; i < node.repeat; i++) {
-                        setTimeout(sendCommand, i*400, harmony, action);
-                    }
-                    setTimeout(closeConnection, node.repeat*400, harmony, node);   
-                }).catch(function(e){
-                    console.log("Error: " + e);
-                });
+                for( var i=0; i<node.repeat; i++ ){
+                    setTimeout(sendCommand,i*300);
+                }
             }
         });
     }
@@ -65,15 +55,12 @@ module.exports = function(RED) {
             } catch(e) {
 
             }
-            msg.payload = false;
-            harmony(node.server.ip).then(function(harmony) {
-                harmony.startActivity(node.activity);
-                harmony.end();
-                msg.payload = true;
+            node.server.harmony.startActivity(node.activity).then(function(response){;
+                node.send( {payload: true} );
             }).catch(function(e){
+                node.send( {payload: false} );
                 console.log("Error: " + e);
             });
-            node.send(msg);
         });
     }
     RED.nodes.registerType("H activity",HarmonyActivity);
@@ -87,65 +74,15 @@ module.exports = function(RED) {
 
         if(!node.server) return;
 
-        harmony(node.server.ip).then(function(harmony) {
-            ! function keepAlive(){
-                harmony.request('getCurrentActivity').timeout(5000).then(function(response) {
-                    setTimeout(keepAlive, 50000);
-                }).catch(function(e){
-                    //disconnected from hub
-                });
-            }();
-
-            harmony.on('', function(digest) {
-                console.log('stateDigest: ' + JSON.stringify(digest));
-                msg.payload = digest;
-                node.send(msg);
+        setTimeout(function(){
+            node.server.harmony.on('stateDigest', function(digest) {
+                try{
+                    node.send( {payload: { activityId: digest.activityId, activityStatus: digest.activityStatus } } );
+                } catch(e) {
+                    console.log("Error: " + e);
+                }
             });
-        }).catch(function(e){
-            console.log('error: '+e);
-        });
+        }, 2000);
     }
     RED.nodes.registerType("H observe",HarmonyObserve);
-
-    RED.httpAdmin.get('/harmony/activities', function(req, res, next) {
-        if(!req.query.ip) {
-            res.status(400).send("Missing argument IP");
-        } else {
-            harmony(req.query.ip)
-                .then(function(harmony) {
-                    harmony.getActivities()
-                        .then(function(acts) {
-                            harmony.end();
-                            res.status(200).send(JSON.stringify(acts));
-                        }).fail(function(err) {
-                            res.status(500).send("Request failed.");
-                        });
-                }).fail(function(err) {
-                    res.status(500).send("Request failed.");
-                });
-        }
-    });
-
-    RED.httpAdmin.get('/harmony/commands', function(req, res, next) {
-        if(!req.query.ip || !req.query.activity) {
-            res.status(400).send("Missing argument.");
-        } else {
-            harmony(req.query.ip)
-                .then(function(harmony) {
-                    harmony.getActivities()
-                        .then(function(acts) {
-                            acts.some(function(act) {
-                                if(act.id === req.query.activity) {
-                                    harmony.end();
-                                    res.status(200).send(JSON.stringify(act.controlGroup));
-                                }
-                            });
-                        }).fail(function(err) {
-                            res.status(500).send("Request failed.");
-                        });
-                }).fail(function(err) {
-                    res.status(500).send("Request failed.");
-                });
-        }
-    });
 };
