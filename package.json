@@ -4,15 +4,28 @@
   "description": "Harmony integration for Node-RED",
   "dependencies": {
     "harmonyhubjs-client": "1.1.10",
-    "harmonyhubjs-discover": "1.0.2"
+    "harmonyhubjs-discover": "1.0.2",
+    "jshint": "^2.9.4"
   },
+  "repository": {
+		"type" : "git",
+		"url"  : "https://github.com/Aietes/node-red-contrib-harmony.git"
+	},
   "keywords": [
-    "node-red"
+    "node-red",
+    "harmony",
+    "remote"
   ],
   "node-red": {
     "nodes": {
       "harmony": "harmony/harmony.js",
       "harmony-server": "harmony/harmony-server.js"
     }
+  },
+  "author": {
+		"name"  : "Stefan Krüger"
+	},
+  "scripts": {
+    "test": "./node_modules/jshint/bin/jshint ./harmony/*"
   }
 }

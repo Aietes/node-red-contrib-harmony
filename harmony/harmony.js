@@ -55,7 +55,7 @@ module.exports = function(RED) {
             } catch(e) {
 
             }
-            node.server.harmony.startActivity(node.activity).then(function(response){;
+            node.server.harmony.startActivity(node.activity).then(function(response){
                 node.send( {payload: true} );
             }).catch(function(e){
                 node.send( {payload: false} );

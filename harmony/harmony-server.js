@@ -16,7 +16,7 @@ module.exports = function(RED) {
                 }).catch(function(e){
                     console.log("Disconnected from Harmony Hub: " + e );
                 });
-            }();
+            }(); // jshint ignore:line
         }).catch(function(e){
             console.log('error: '+e);
         });
@@ -77,4 +77,4 @@ module.exports = function(RED) {
                 });
         }
     });
-}
+};
