@@ -26,6 +26,6 @@
 		"name"  : "Stefan Krüger"
 	},
   "scripts": {
-    "test": "./node_modules/jshint/bin/jshint ./harmony/*"
+    "test": "./node_modules/jshint/bin/jshint ./harmony/*.js"
   }
 }
