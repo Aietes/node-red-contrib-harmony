@@ -45,6 +45,11 @@
     back to the input field will show the <i>query</i> string in the field.
 	</p>
     <p>
+    The <b>Repeat</b> field allows for the command to be repeated. The default is <i>1</i>, meaning the command is send once. 
+    For example entering <i>10</i> will send the command exactly 10 times. This can be helpful when using commands 
+    for volume or channels.
+    </p>
+    <p>
     The command configured in the node will be triggered by any input injected into the node, the output slot will return <i>msg.payload = true</i> 
     if the command was sent successfully.
 	</p>
@@ -283,12 +288,17 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
-<script type="text/x-red" data-help-name="H activity">
+<script type="text/x-red" data-help-name="H observe">
     <p>A node to observe changes of activities for a given Harmony Hub through Node-RED</p>
     <p>
     A Harmony <b>Hub</b> needs to be selected from the list or created by clicking on the edit button. The Harmony Hub 
     <b>IP</b> address can be autodetected by clicking on the search button in the configuration node.
 	</p>
+    <p>
+    When an <b>Activity</b> is switched on the Harmony Hub, the node sends an object with a payload to the output: 
+    payload: { activityId: activityId, activityStatus: activityStatus }  The <i>activityId</i> is the ID of the current activity, 
+    the <i>activityStatus</i> represents the following states: 0 - is off, 1 - Activity is starting, 2 - Activity is started, 3 - Hub is turning off
+    </p>
 </script>
 
 <script type="text/javascript">

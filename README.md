@@ -47,6 +47,8 @@ An **Activity** that is set up on the Harmony Hub needs to be provided, it's ide
 
 A **Command** from the selected **Activity** needs to be provided, it's a stanza *query*. Clicking on the search button loads the available commands from the provided **Activity**, that can then be selected from a list. Switching back to the input field will show the *query* string in the field.
 
+The **Repeat** field allows for the command to be repeated. The default is *1*, meaning the command is send once. For example entering *10* will send the command exactly 10 times. This can be helpful when using commands for volume or channels.
+
 The command configured in the node will be triggered by any input injected into the node, the output slot will return *msg.payload = true* if the command was sent successfully.
 
 ### H activity
@@ -63,6 +65,18 @@ back to the input field will show the *ID* in the field. The **Label** field bel
 To switch off, select *PowerOff* from the **Activity** dropdown list, or enter *"-1"* into the field.
 
 The command configured in the node will be triggered by any input injected into the node, the output slot will return *msg.payload = true* if the command was sent successfully.
+
+### H observe
+
+A node to observe an **Activity** being triggered on a Harmony Hub through Node-RED
+
+A Harmony **Hub** needs to be selected from the list or created by clicking on the edit button. The Harmony Hub 
+**IP** address can be autodetected by clicking on the search button in the configuration node.
+
+When an **Activity** is switched on the Harmony Hub, the node sends an object with a payload to the output:
+`payload: { activityId: activityId, activityStatus: activityStatus }`
+The *activityId* is the ID of the current activity, the *activityStatus* represents the following states:
+0 = Hub is off, 1 = Activity is starting, 2 = Activity is started, 3 = Hub is turning off
 
 ## Built With
 
