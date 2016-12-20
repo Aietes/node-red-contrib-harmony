@@ -11,7 +11,7 @@ module.exports = function(RED) {
         harmonyClient(node.ip).then(function(harmony) {
             node.harmony = harmony;
             ! function keepAlive(){
-                harmony.request('getCurrentActivity').timeout(5000).then(function(response) {
+                harmony.request('getCurrentActivity').timeout(50000).then(function(response) {
                     setTimeout(keepAlive, 50000);
                 }).catch(function(e){
                     console.log("Disconnected from Harmony Hub: " + e );

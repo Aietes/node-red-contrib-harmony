@@ -13,14 +13,6 @@ module.exports = function(RED) {
 
         if(!node.server) return;
 
-        function sendCommand(){
-            node.server.harmony.send('holdAction', 'action=' + action + ':status=press')
-            .catch(function(e){
-                node.send( {payload: false} );
-                console.log("Error: " + e);
-            });
-        }
-
         node.on('input', function(msg) {
             try {
                 msg.payload = JSON.parse(msg.payload);
@@ -31,9 +23,30 @@ module.exports = function(RED) {
             if(!node.command || !node.server) {
                 node.send( {payload: false} );
             } else {
-                for( var i=0; i<node.repeat; i++ ){
-                    setTimeout(sendCommand,i*300);
+                var k = Math.floor(node.repeat / 3);
+                var m = node.repeat % 3;
+
+                for( var i=0; i<k; i++ ){
+                    setTimeout(function(){
+                        node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=0').then(function(){
+                            node.server.harmony.send('holdAction', 'action=' + action + ':status=release'+ ':timestamp=50');
+                        });
+                        node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=100').then(function(){
+                            node.server.harmony.send('holdAction', 'action=' + action + ':status=release'+ ':timestamp=150');
+                        });
+                        node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=200').then(function(){
+                            node.server.harmony.send('holdAction', 'action=' + action + ':status=release'+ ':timestamp=250');
+                        });
+                    },i*300);
                 }
+
+                for( var i=0; i<m; i++){
+                    var offset = i*50+50;
+                    node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=' + i*50).then(function(){
+                        node.server.harmony.send('holdAction', 'action=' + action + ':status=release'+ ':timestamp=' + offset);
+                    });                    
+                }
+                node.send( {payload: true} );
             }
         });
     }
@@ -76,6 +89,7 @@ module.exports = function(RED) {
 
         setTimeout(function(){
             node.server.harmony.on('stateDigest', function(digest) {
+                //console.log(JSON.stringify(digest));
                 try{
                     node.send( {payload: { activityId: digest.activityId, activityStatus: digest.activityStatus } } );
                 } catch(e) {
