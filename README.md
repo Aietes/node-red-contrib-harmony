@@ -35,7 +35,7 @@ You can install the extension simply in Node-RED in your browser, by default und
 
 ## Usage / Available nodes
 
-Two nodes are available in Node-RED: **H command** and **H activity**, located in the group **harmony**.
+Three nodes are available in Node-RED: **H command**, **H activity** and **H observe**, located in the group **harmony**.
 
 ### H command
 
