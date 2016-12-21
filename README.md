@@ -1,5 +1,5 @@
 # Harmony Hub Integration for Node-RED
-[![npm version](https://badge.fury.io/js/node-red-contrib-harmony.svg)](http://badge.fury.io/js/node-red-contrib-harmony) [![Build Status](https://travis-ci.org/Aietes/node-red-contrib-harmony.svg?branch=master)](https://travis-ci.org/Aietes/node-red-contrib-harmony)
+[![npm version](https://badge.fury.io/js/node-red-contrib-harmony.svg)](http://badge.fury.io/js/node-red-contrib-harmony) [![GitHub release](https://img.shields.io/github/release/Aietes/node-red-contrib-harmony.svg)](https://github.com/Aietes/node-red-contrib-harmony/releases/latest) [![Build Status](https://travis-ci.org/Aietes/node-red-contrib-harmony.svg?branch=master)](https://travis-ci.org/Aietes/node-red-contrib-harmony)
 
 Control your devices connected to a Logitech&trade; Harmony Hub from [Node-RED](https://nodered.org).
 
