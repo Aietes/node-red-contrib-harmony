@@ -1,102 +1,111 @@
-module.exports = function(RED) {
-    function HarmonySendCommand(n) {
-        RED.nodes.createNode(this,n);
-        var node = this;
+module.exports = function (RED) {
+  function HarmonySendCommand (n) {
+    RED.nodes.createNode(this, n)
+    var node = this
 
-        node.server = RED.nodes.getNode(n.server);
-        node.activity = n.activity;
-        node.label = n.label;
-        node.command = n.command;
-        node.repeat = Number.parseInt(n.repeat) || 1;
+    node.server = RED.nodes.getNode(n.server)
+    node.activity = n.activity
+    node.label = n.label
+    node.command = n.command
+    node.repeat = Number.parseInt(n.repeat) || 1
 
-        var action = decodeURI(node.command);
+    var action = decodeURI(node.command)
 
-        if(!node.server) return;
+    if (!node.server) return
 
-        node.on('input', function(msg) {
-            try {
-                msg.payload = JSON.parse(msg.payload);
-            } catch(e) {
+    node.on('input', function (msg) {
+      try {
+        msg.payload = JSON.parse(msg.payload)
+      } catch (err) {
 
-            }
+      }
 
-            if(!node.command || !node.server) {
-                node.send( {payload: false} );
-            } else {
-                var k = Math.floor(node.repeat / 3);
-                var m = node.repeat % 3;
+      if (!node.command || !node.server) {
+        node.send({payload: false})
+      } else {
+        var k = Math.floor(node.repeat / 3)
+        var m = node.repeat % 3
 
-                for( var i=0; i<k; i++ ){
-                    setTimeout(function(){
-                        node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=0').then(function(){
-                            node.server.harmony.send('holdAction', 'action=' + action + ':status=release'+ ':timestamp=50');
-                        });
-                        node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=100').then(function(){
-                            node.server.harmony.send('holdAction', 'action=' + action + ':status=release'+ ':timestamp=150');
-                        });
-                        node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=200').then(function(){
-                            node.server.harmony.send('holdAction', 'action=' + action + ':status=release'+ ':timestamp=250');
-                        });
-                    },i*300);
-                }
+        for (var i = 0; i < k; i++) {
+          setTimeout(function () {
+            node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=0').then(function () {
+              node.server.harmony.send('holdAction', 'action=' + action + ':status=release' + ':timestamp=50')
+            })
+            node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=100').then(function () {
+              node.server.harmony.send('holdAction', 'action=' + action + ':status=release' + ':timestamp=150')
+            })
+            node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=200').then(function () {
+              node.server.harmony.send('holdAction', 'action=' + action + ':status=release' + ':timestamp=250')
+            })
+          }, i * 300)
+        }
 
-                for( var i=0; i<m; i++){
-                    var offset = i*50+50;
-                    node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=' + i*50).then(function(){
-                        node.server.harmony.send('holdAction', 'action=' + action + ':status=release'+ ':timestamp=' + offset);
-                    });                    
-                }
-                node.send( {payload: true} );
-            }
-        });
-    }
-    RED.nodes.registerType("H command",HarmonySendCommand);
+        for (i = 0; i < m; i++) {
+          var offset = i * 50 + 50
+          node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=' + i * 50).then(function () {
+            node.server.harmony.send('holdAction', 'action=' + action + ':status=release' + ':timestamp=' + offset)
+          })
+        }
+        node.send({payload: true})
+      }
+    })
+  }
+  RED.nodes.registerType('H command', HarmonySendCommand)
 
-    function HarmonyActivity(n) {
-        RED.nodes.createNode(this,n);
-        var node = this;
+  function HarmonyActivity (n) {
+    RED.nodes.createNode(this, n)
+    var node = this
 
-        node.server = RED.nodes.getNode(n.server);
-        node.activity = n.activity;
-        node.label = n.label;
+    node.server = RED.nodes.getNode(n.server)
+    node.activity = n.activity
+    node.label = n.label
 
-        if(!node.server) return;
+    if (!node.server) return
 
-        node.on('input', function(msg) {
-            try {
-                msg.payload = JSON.parse(msg.payload);
-            } catch(e) {
+    node.on('input', function (msg) {
+      try {
+        msg.payload = JSON.parse(msg.payload)
+      } catch (e) {
 
-            }
-            node.server.harmony.startActivity(node.activity).then(function(response){
-                node.send( {payload: true} );
-            }).catch(function(e){
-                node.send( {payload: false} );
-                console.log("Error: " + e);
-            });
-        });
-    }
-    RED.nodes.registerType("H activity",HarmonyActivity);
+      }
+      node.server.harmony.startActivity(node.activity).then(function (response) {
+        node.send({payload: true})
+      }).catch(function (err) {
+        node.send({payload: false})
+        console.log('Error: ' + err)
+      })
+    })
+  }
+  RED.nodes.registerType('H activity', HarmonyActivity)
 
-    function HarmonyObserve(n) {
-        RED.nodes.createNode(this,n);
-        var node = this;
+  function HarmonyObserve (n) {
+    RED.nodes.createNode(this, n)
+    var node = this
 
-        node.server = RED.nodes.getNode(n.server);
-        node.label = n.label;
+    node.server = RED.nodes.getNode(n.server)
+    node.label = n.label
 
-        if(!node.server) return;
+    if (!node.server) return
 
-        setTimeout(function(){
-            node.server.harmony.on('stateDigest', function(digest) {
-                //console.log(JSON.stringify(digest));
-                try{
-                    node.send( {payload: { activityId: digest.activityId, activityStatus: digest.activityStatus } } );
-                } catch(e) {
-                    console.log("Error: " + e);
-                }
-            });
-        }, 2000);
-    }
-    RED.nodes.registerType("H observe",HarmonyObserve);
-};
+    setTimeout(function () {
+      try {
+        node.server.harmony.on('stateDigest', function (digest) {
+          // console.log(JSON.stringify(digest));
+          try {
+            node.send({
+              payload: {
+                activityId: digest.activityId,
+                activityStatus: digest.activityStatus
+              }
+            })
+          } catch (err) {
+            console.log('Error: ' + err)
+          }
+        })
+      } catch (err) {
+        console.log('Error: ' + err)
+      }
+    }, 2000)
+  }
+  RED.nodes.registerType('H observe', HarmonyObserve)
+}
