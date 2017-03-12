@@ -7,14 +7,26 @@ module.exports = function (RED) {
     var node = this
 
     node.ip = n.ip
+    createClient(node)
+  }
+  RED.nodes.registerType('harmony-server', HarmonyServerNode)
 
-    harmonyClient(node.ip).then(function (harmony) {
+  function createClient (node) {
+    var harmony = node.harmony
+    var ip = node.ip
+    if (harmony && typeof harmony.end !== 'undefined') {
+      try {
+        harmony.end()
+      } catch (e) { }
+    }
+    harmonyClient(ip).then(function (harmony) {
       node.harmony = harmony
       !(function keepAlive () {
         harmony.request('getCurrentActivity').timeout(50000).then(function (response) {
           setTimeout(keepAlive, 50000)
         }).catch(function (e) {
           console.log('Disconnected from Harmony Hub: ' + e)
+          createClient(node)
         })
       }()) // jshint ignore:line
     }).catch(function (err) {
@@ -22,7 +34,6 @@ module.exports = function (RED) {
       if (err) throw err
     })
   }
-  RED.nodes.registerType('harmony-server', HarmonyServerNode)
 
   RED.httpAdmin.get('/harmony/server', function (req, res, next) {
     var discover = new HarmonyHubDiscover(61991)
