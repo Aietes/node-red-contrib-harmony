@@ -8,6 +8,14 @@ module.exports = function (RED) {
 
     node.ip = n.ip
     createClient(node)
+
+    this.on('close', function () {
+      if (node.harmony && typeof node.harmony.end !== 'undefined') {
+        try {
+          node.harmony.end()
+        } catch (e) { }
+      }
+    })
   }
   RED.nodes.registerType('harmony-server', HarmonyServerNode)
 
