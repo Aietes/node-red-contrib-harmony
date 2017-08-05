@@ -35,7 +35,7 @@ You can install the extension simply in Node-RED in your browser, by default und
 
 ## Usage / Available nodes
 
-Three nodes are available in Node-RED: **H command**, **H activity** and **H observe**, located in the group **harmony**.
+Four nodes are available in Node-RED: **H command**, **H activity**, **H device command** and **H observe**, located in the group **harmony**.
 
 ### H command
 
@@ -55,22 +55,36 @@ The command configured in the node will be triggered by any input injected into 
 
 A node to activate an **Activity** on a Harmony Hub through Node-RED
 
-A Harmony **Hub** needs to be selected from the list or created by clicking on the edit button. The Harmony Hub 
+A Harmony **Hub** needs to be selected from the list or created by clicking on the edit button. The Harmony Hub
 **IP** address can be autodetected by clicking on the search button in the configuration node.
 
-An **Activity** that is set up on the Harmony Hub needs to be provided, it's identified by its *ID*. Clicking on the 
-search button loads the available activities from the provided **Hub**, which can then be selected from a dropdown list. Switching 
+An **Activity** that is set up on the Harmony Hub needs to be provided, it's identified by its *ID*. Clicking on the
+search button loads the available activities from the provided **Hub**, which can then be selected from a dropdown list. Switching
 back to the input field will show the *ID* in the field. The **Label** field below will show the **Activity** label.
 
 To switch off, select *PowerOff* from the **Activity** dropdown list, or enter *"-1"* into the field.
 
 The command configured in the node will be triggered by any input injected into the node, the output slot will return *msg.payload = true* if the command was sent successfully.
 
+### H device command
+
+A node to send a **Device Command** to a Harmony Hub through Node-RED.
+
+A Harmony **Hub** needs to be selected from the list or created by clicking on the edit button. The Harmony Hub **IP** address can be autodetected by clicking on the search button in the configuration node.
+
+A **Device** that is set up on the Harmony Hub needs to be provided, it's identified by its *ID*. Clicking on the search button loads the available devices from the provided **Hub**, which can then be selected from a dropdown list. Switching back to the imput field will show the *ID* in the field. The **Label** field below will show the **Device** label.
+
+A **Command** from the selected **Device** needs to be provided, it's a stanza *query*. Clicking on the search button loads the available commands from the provided **Device**, that can then be selected from a list. Switching back to the input field will show the *query* string in the field.
+
+The **Repeat** field allows for the command to be repeated. The default is *1*, meaning the command is send once. For example entering *10* will send the command exactly 10 times. This can be helpful when using commands for volume or channels.
+
+The command configured in the node will be triggered by any input injected into the node, the output slot will return *msg.payload = true* if the command was sent successfully
+
 ### H observe
 
 A node to observe an **Activity** being triggered on a Harmony Hub through Node-RED
 
-A Harmony **Hub** needs to be selected from the list or created by clicking on the edit button. The Harmony Hub 
+A Harmony **Hub** needs to be selected from the list or created by clicking on the edit button. The Harmony Hub
 **IP** address can be autodetected by clicking on the search button in the configuration node.
 
 When an **Activity** is switched on the Harmony Hub, the node sends an object with a payload to the output:

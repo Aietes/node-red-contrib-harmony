@@ -101,4 +101,69 @@ module.exports = function (RED) {
                 })
     }
   })
+
+  RED.httpAdmin.get('/harmony/devices', function (req, res, next) {
+    if (!req.query.ip) {
+      res.status(400).send('Missing argument IP')
+    } else {
+      harmonyClient(req.query.ip)
+                .then(function (harmony) {
+                  harmony.getAvailableCommands()
+                        .then(function (commands) {
+                          var devices = commands.device
+                            .filter(function (device) {
+                              return device.controlGroup.length > 0
+                            })
+                            .map(function (device) {
+                              return {id: device.id, label: device.label}
+                            })
+                          harmony.end()
+                          res.status(200).send(JSON.stringify(devices))
+                        }).fail(function (err) {
+                          harmony.end()
+                          res.status(500).send('Request failed.')
+                          if (err) throw err
+                        })
+                }).fail(function (err) {
+                  res.status(500).send('Request failed.')
+                  if (err) throw err
+                })
+    }
+  })
+
+  RED.httpAdmin.get('/harmony/device-commands', function (req, res, next) {
+    if (!req.query.ip || !req.query.deviceId) {
+      res.status(400).send('Missing argument.')
+    } else {
+      harmonyClient(req.query.ip)
+                .then(function (harmony) {
+                  harmony.getAvailableCommands()
+                        .then(function (commands) {
+                          var device = commands.device.filter(function(device) {
+                            return device.id === req.query.deviceId
+                          }).pop()
+                          var deviceCommands = device.controlGroup
+                            .map(function (group) {
+                              return group.function
+                            })
+                            .reduce(function (prev, curr) {
+                              return prev.concat(curr)
+                            })
+                            .map(function (fn) {
+                              return {action: fn.action, label: fn.label}
+                            })
+                          harmony.end()
+                          res.status(200).send(JSON.stringify(deviceCommands))
+                        }).fail(function (err) {
+                          harmony.end()
+                          res.status(500).send('Request failed.')
+                          if (err) throw err
+                        })
+
+                }).fail(function (err) {
+                  res.status(500).send('Request failed.')
+                  if (err) throw err
+                })
+    }
+  })
 }
