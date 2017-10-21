@@ -1,5 +1,6 @@
 var HarmonyHubDiscover = require('harmonyhubjs-discover')
 var harmonyClient = require('harmonyhubjs-client')
+var events = require('events')
 
 module.exports = function (RED) {
   function HarmonyServerNode (n) {
@@ -7,6 +8,7 @@ module.exports = function (RED) {
     var node = this
 
     node.ip = n.ip
+    node.harmonyEventEmitter = new events.EventEmitter()
     createClient(node)
 
     this.on('close', function () {
@@ -29,6 +31,9 @@ module.exports = function (RED) {
     }
     harmonyClient(ip).then(function (harmony) {
       node.harmony = harmony
+      harmony.on('stateDigest', function(digest) {
+        node.harmonyEventEmitter.emit('stateDigest', digest)
+      })
       !(function keepAlive () {
         harmony.request('getCurrentActivity').timeout(50000).then(function (response) {
           setTimeout(keepAlive, 50000)
