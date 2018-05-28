@@ -108,4 +108,40 @@ module.exports = function (RED) {
     }, 2000)
   }
   RED.nodes.registerType('H observe', HarmonyObserve)
+
+  function HarmonySendDeviceCommand (n) {
+    RED.nodes.createNode(this, n)
+    var node = this
+
+    node.server = RED.nodes.getNode(n.server)
+    node.deviceId = n.device
+    node.label = n.label
+    node.command = n.command
+    node.repeat = Number.parseInt(n.repeat) || 1
+
+    if (!node.server) return
+
+    var action = decodeURI(node.command)
+
+    node.on('input', function (msg) {
+      try {
+        msg.payload = JSON.parse(msg.payload)
+      } catch (err) { }
+
+      if (!node.command || !node.server) {
+        node.send({payload: false})
+        return;
+      }
+
+      for (var i = 0; i < node.repeat; i++) {
+        setTimeout(function () {
+          node.server.harmony.send('holdAction', 'action=' + action + ':status=press').then(function () {
+            node.server.harmony.send('holdAction', 'action=' + action + ':status=release')
+          })
+        }, 100)
+      }
+      node.send({payload: true})
+    })
+  }
+  RED.nodes.registerType('H device command', HarmonySendDeviceCommand)
 }
