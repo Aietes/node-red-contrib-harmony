@@ -4,8 +4,8 @@
   "description": "Harmony integration for Node-RED",
   "license": "MIT",
   "dependencies": {
-    "harmonyhubjs-client": "^1.1.10",
-    "harmonyhubjs-discover": "^1.0.2"
+    "@harmonyhub/client": "^1.0.1",
+    "@harmonyhub/discover": "^1.0.0"
   },
   "repository": {
     "type": "git",
@@ -29,9 +29,9 @@
     "test": "./node_modules/jshint/bin/jshint"
   },
   "devDependencies": {
-    "mocha": "*",
-    "jshint": "*",
     "chai": "*",
-    "sinon": "*"
+    "jshint": "*",
+    "mocha": "*",
+    "sinon": "^6.1.5"
   }
 }

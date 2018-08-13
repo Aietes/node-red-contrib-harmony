@@ -130,7 +130,7 @@ module.exports = function (RED) {
 
       if (!node.command || !node.server) {
         node.send({payload: false})
-        return;
+        return
       }
 
       for (var i = 0; i < node.repeat; i++) {
