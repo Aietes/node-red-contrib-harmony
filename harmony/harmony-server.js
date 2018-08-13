@@ -68,6 +68,12 @@ module.exports = function (RED) {
                   harmony.getActivities()
                         .then(function (acts) {
                           harmony.end()
+                          acts = acts.map(function(action) {
+                            return {
+                              id: action.id,
+                              label: action.label
+                            }
+                          })
                           res.status(200).send(JSON.stringify(acts))
                         }).fail(function (err) {
                           harmony.end()
