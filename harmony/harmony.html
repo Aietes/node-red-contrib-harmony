@@ -59,7 +59,7 @@
             server: {type:"harmony-server", required:true},
             activity: {value:""},
             label: {value:""},
-            command: {value:"", required:true},
+            command: {value:""},
             repeat: {value:"1", validate:function(v) { return v > 0 } }
         },
         inputs:1,
@@ -89,6 +89,7 @@
 
             function loadActivities(selected_act){
                 if (config && config.ip) {
+                $('#node-input-activity').attr("disabled", "disabled")
                 $('#node-input-activity').append("<option value='' selected>Loading activities...</option>")
                 $.get('harmony/activities', { ip: config.ip } )
                     .done(function(data) {
@@ -101,7 +102,8 @@
                             acts.forEach(function(act){
                                 $('#node-input-activity').append('<option value="' + act.id + '">' + act.label + '</option>')
                             })
-                            $('#node-input-activity').val(selected_act)                     
+                            $('#node-input-activity').val(selected_act)
+                            $('#node-input-activity').removeAttr("disabled");                
                         }
                     }).fail(function(err) {
                         RED.notify(err.responseText, "error")
@@ -111,6 +113,7 @@
 
             function loadCommands(act_id,selected_comm){
                 if (config && config.ip && act_id) {
+                    $('#node-input-command').attr("disabled", "disabled")
                     $('#node-input-command').append("<option value='' selected>Loading commands...</option>")
                     $.get('harmony/commands', { ip: config.ip, activity: act_id } )
                         .done(function(data) {
@@ -128,6 +131,7 @@
                                 if( selected_comm != null ){
                                     $('#node-input-command').val(selected_comm)
                                 }
+                                $('#node-input-command').removeAttr("disabled");  
                             }
                         }).fail(function(err) {
                             RED.notify(err.responseText, "error");
