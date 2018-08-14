@@ -1,4 +1,4 @@
-const HarmonyHubDiscover = require('@harmonyhub/discover')
+const HarmonyHubDiscover = require('@harmonyhub/discover').Explorer
 var harmonyClient = require('@harmonyhub/client').getHarmonyClient
 var events = require('events')
 
@@ -53,6 +53,7 @@ module.exports = function (RED) {
     })
 
     discover.start()
+    //setTimeout(discover.stop, 5000)
   })
 
   RED.httpAdmin.get('/harmony/activities', function (req, res, next) {
