@@ -9,9 +9,9 @@ module.exports = function (RED) {
     node.command = n.command
     node.repeat = Number.parseInt(n.repeat) || 1
 
-    var action = decodeURI(node.command)
-
     if (!node.server) return
+
+    var action = decodeURI(node.command)
 
     node.on('input', function (msg) {
       try {
@@ -24,8 +24,17 @@ module.exports = function (RED) {
         node.send({payload: false})
       } else {
         for (var i = 0; i < node.repeat; i++) {
-          node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=0')
-          node.server.harmony.send('holdAction', 'action=' + action + ':status=release' + ':timestamp=50')
+          node.server.harmony.request('holdAction', 'action=' + action + ':status=press' + ':timestamp=0')
+            .catch(function (err) {
+              node.send({payload: false})
+              if (err) throw err
+            }).then(function (response) {
+              node.server.harmony.request('holdAction', 'action=' + action + ':status=press' + ':timestamp=50')
+                .catch(function (err) {
+                  node.send({payload: false})
+                  console.log('Error: ' + err)
+                })
+            })
         }
         node.send({payload: true})
       }
@@ -72,7 +81,7 @@ module.exports = function (RED) {
     setTimeout(function () {
       try {
         node.server.harmonyEventEmitter.on('stateDigest', function (digest) {
-		  // console.log(JSON.stringify(digest));
+          // console.log(JSON.stringify(digest));
           try {
             node.send({
               payload: {
