@@ -17,34 +17,15 @@ module.exports = function (RED) {
       try {
         msg.payload = JSON.parse(msg.payload)
       } catch (err) {
-
+        console.log('Error: ' + err)
       }
 
       if (!node.command || !node.server) {
         node.send({payload: false})
       } else {
-        var k = Math.floor(node.repeat / 3)
-        var m = node.repeat % 3
-
-        for (var i = 0; i < k; i++) {
-          setTimeout(function () {
-            node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=0').then(function () {
-              node.server.harmony.send('holdAction', 'action=' + action + ':status=release' + ':timestamp=50')
-            })
-            node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=100').then(function () {
-              node.server.harmony.send('holdAction', 'action=' + action + ':status=release' + ':timestamp=150')
-            })
-            node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=200').then(function () {
-              node.server.harmony.send('holdAction', 'action=' + action + ':status=release' + ':timestamp=250')
-            })
-          }, i * 300)
-        }
-
-        for (i = 0; i < m; i++) {
-          var offset = i * 50 + 50
-          node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=' + i * 50).then(function () {
-            node.server.harmony.send('holdAction', 'action=' + action + ':status=release' + ':timestamp=' + offset)
-          })
+        for (var i = 0; i < node.repeat; i++) {
+          node.server.harmony.send('holdAction', 'action=' + action + ':status=press' + ':timestamp=0')
+          node.server.harmony.send('holdAction', 'action=' + action + ':status=release' + ':timestamp=50')
         }
         node.send({payload: true})
       }
@@ -65,15 +46,16 @@ module.exports = function (RED) {
     node.on('input', function (msg) {
       try {
         msg.payload = JSON.parse(msg.payload)
-      } catch (e) {
-
-      }
-      node.server.harmony.startActivity(node.activity).then(function (response) {
-        node.send({payload: true})
-      }).catch(function (err) {
-        node.send({payload: false})
+      } catch (err) {
         console.log('Error: ' + err)
-      })
+      }
+      node.server.harmony.startActivity(node.activity)
+        .catch(function (err) {
+          node.send({payload: false})
+          console.log('Error: ' + err)
+        }).then(function (response) {
+          node.send({payload: true})
+        })
     })
   }
   RED.nodes.registerType('H activity', HarmonyActivity)

@@ -10,21 +10,17 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-activity"><i class="fa fa-lightbulb-o"></i> Activity</label>
-        <input type="text" id="node-input-activity" style="width: 57%;" />
-        <a id="node-input-scan" class="editor-button"><i class="fa fa-search"></i></a>
+        <label for="node-input-activity"><i class="fa fa-television"></i> Activity</label>
+        <select id="node-input-activity" style="width: 60%;"></select>
+        <a id="node-input-scan" class="editor-button"><i class="fa fa-refresh"></i></a>
     </div>
     <div class="form-row">
-        <label for="node-input-label"><i class="icon-tag"></i> Label</label>
-        <input type="text" id="node-input-label" style="width: 57%;" disabled/>
+        <label for="node-input-command"><i class="fa fa-keyboard-o"></i> Command</label>
+        <select id="node-input-command" style="width: 60%;"></select>
+        <a id="node-input-commandscan" class="editor-button"><i class="fa fa-refresh"></i></a>
     </div>
     <div class="form-row">
-        <label for="node-input-command"><i class="icon-tag"></i> Command</label>
-        <input type="text" id="node-input-command" style="width: 57%;" />
-        <a id="node-input-commandscan" class="editor-button"><i class="fa fa-search"></i></a>
-    </div>
-    <div class="form-row">
-        <label for="node-input-repeat"><i class="icon-tag"></i> Repeat</label>
+        <label for="node-input-repeat"><i class="fa fa-repeat"></i> Repeat</label>
         <input type="text" id="node-input-repeat">
     </div>
 </script>
@@ -75,96 +71,76 @@
         },
         oneditprepare: function() {
 
-            var config = RED.nodes.node($('#node-input-server').val());
+            var config = RED.nodes.node($('#node-input-server').val())
 
-            function commandSelect() {
-                var current = $('#node-input-command').val();
-                $('#node-input-commandscan').html("<i class='fa fa-search'></i>");
-                $('#node-input-command').replaceWith('<input type="text" id="node-input-command" style="width: 57%;"/>');
-                $('#node-input-command').val(current);
+            loadActivities(this.activity)
+            loadCommands(this.activity,this.command)
+
+            $('#node-input-scan').click( function() {
+                loadActivities($('#node-input-activity').val())
+            })
+
+            $('#node-input-commandscan').click( function() {
+                loadCommands($('#node-input-activity').val(),$('#node-input-command').val())
+            });
+
+            $('#node-input-activity').on('change', function() {
+                loadCommands(this.value,null)
+            });
+
+            function loadActivities(selected_act){
+                if (config && config.ip) {
+                $('#node-input-activity').append("<option value='' selected>Loading activities...</option>")
+                $.get('harmony/activities', { ip: config.ip } )
+                    .done(function(data) {
+                        var acts = JSON.parse(data);
+                        $('#node-input-activity').empty()
+                        if(!acts || acts.length <= 0) {
+                            $('#node-input-activity').append("<option value='' selected>No activities</option>")
+                            RED.notify("No activities found.", "error")
+                        } else {
+                            acts.forEach(function(act){
+                                $('#node-input-activity').append('<option value="' + act.id + '">' + act.label + '</option>')
+                            })
+                            $('#node-input-activity').val(selected_act)                     
+                        }
+                    }).fail(function(err) {
+                        RED.notify(err.responseText, "error")
+                    })
+                }          
             }
 
-            function commandInput(){
-                var act_id;
-                if ($('#node-input-activity').prop("tagName") === "INPUT") {
-                    act_id = $('#node-input-activity').val();
-                } else {
-                    act_id = $('#node-input-activity option:selected').val();
-                }
-
-                $('#node-input-command').val("Loading commands...");
-
+            function loadCommands(act_id,selected_comm){
                 if (config && config.ip && act_id) {
+                    $('#node-input-command').append("<option value='' selected>Loading commands...</option>")
                     $.get('harmony/commands', { ip: config.ip, activity: act_id } )
                         .done(function(data) {
                             var comms = JSON.parse(data);
+                            $('#node-input-command').empty()
                             if(!comms || comms.length <= 0) {
-                                return;
+                                $('#node-input-command').append("<option value='' selected>No commands</option>")
+                                RED.notify("No commands found.", "error")
+                            } else {
+                                comms.forEach(function(comm){
+                                    comm.function.forEach(function(item){
+                                        $('#node-input-command').append('<option value="' + encodeURI(item.action.replace(/\:/g, '::')) + '">' + item.label + '</option>')
+                                    })
+                                })
+                                if( selected_comm != null ){
+                                    $('#node-input-command').val(selected_comm)
+                                }
                             }
-                            $('#node-input-commandscan').html("<i class='fa fa-i-cursor'></i>");
-                            $('#node-input-command').replaceWith('<select id="node-input-command" style="width: 60%;"></select>');
-                            comms.forEach(function(comm){
-                                comm.function.forEach(function(item){
-                                    $('#node-input-command').append('<option value="' + encodeURI(item.action.replace(/\:/g, '::')) + '">' + item.label + '</option>');
-                                });
-                            });
                         }).fail(function(err) {
                             RED.notify(err.responseText, "error");
-                        });
+                        })
                 }
 
             }
-
-            function toggleSelect() {
-                var current = $('#node-input-activity').val();
-                $('#node-input-scan').html("<i class='fa fa-search'></i>");
-                $('#node-input-activity').replaceWith('<input type="text" id="node-input-activity" style="width: 57%;"/>');
-                $('#node-input-activity').val(current);
-            }
-
-            function toggleInput() {
-                var current = $('#node-input-activity').val();
-                $('#node-input-activity').val("Loading activities...")
-
-                if (config && config.ip) {
-                    $.get('harmony/activities', { ip: config.ip } )
-                        .done(function(data) {
-                            var acts = JSON.parse(data);
-                            $('#node-input-scan').html("<i class='fa fa-i-cursor'></i>");
-                            $('#node-input-activity').replaceWith('<select id="node-input-activity" style="width: 60%;"></select>');
-                            $('#node-input-activity').on('change', function() {
-                                $('#node-input-label').val($('#node-input-activity option:selected').text());
-                            });
-                            if(!acts || acts.length <= 0) {
-                                RED.notify("No activities found.", "error");
-                                return;
-                            }
-                            acts.forEach(function(act){
-                                $('#node-input-activity').append('<option value="' + act.id + '">' + act.label + '</option>');
-                            });
-                            $('#node-input-activity').val(current);
-                        }).fail(function(err) {
-                            RED.notify(err.responseText, "error");
-                        });
-                }
-            }
-
-            $('#node-input-scan').click( function() {
-                if ($('#node-input-activity').prop("tagName") === "INPUT") {
-                    toggleInput();
-                } else {
-                    toggleSelect();
-                }
-            });
-
-            $('#node-input-commandscan').click( function() {
-                if ($('#node-input-command').prop("tagName") === "INPUT") {
-                    commandInput();
-                } else {
-                    commandSelect();
-                }
-            });
-
+        },
+        oneditsave: function() {
+            this.activity = $('#node-input-activity').val();
+            this.label = $('select#node-input-activity option:selected').text();
+            this.command = $('#node-input-command').val();
         }
     });
 </script>

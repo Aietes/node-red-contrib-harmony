@@ -65,7 +65,11 @@ module.exports = function (RED) {
           if (err) throw err
         }).then(function (harmony) {
           harmony.getActivities()
-            .then(function (acts) {
+            .catch(function (err) {
+              harmony.end()
+              res.status(500).send('Request failed.')
+              if (err) throw err
+            }).then(function (acts) {
               harmony.end()
               acts = acts.map(function (action) {
                 return {
@@ -74,10 +78,6 @@ module.exports = function (RED) {
                 }
               })
               res.status(200).send(JSON.stringify(acts))
-            }).catch(function (err) {
-              harmony.end()
-              res.status(500).send('Request failed.')
-              if (err) throw err
             })
         })
     }
