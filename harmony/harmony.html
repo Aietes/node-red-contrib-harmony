@@ -25,23 +25,22 @@
     </div>
 </script>
 <script type="text/x-red" data-help-name="H command">
-    <p>A node to send a <b>Command</b> to a Harmony Hub through Node-RED</p>
+    <p>A node to send a <b>Command</b> to a Harmony Hub through Node-RED.</p>
     <p>
-    A Harmony <b>Hub</b> needs to be selected from the list or created by clicking on the edit button. The Harmony Hub
+    A Harmony <i class="fa fa-server" /> <b>Hub</b> needs to be selected from the list or created by clicking on the edit button. The Harmony Hub
     <b>IP</b> address can be autodetected by clicking on the search button in the configuration node.
 	</p>
 	<p>
-	An <b>Activity</b> that is set up on the Harmony Hub needs to be provided, it's identified by its <i>ID</i>. Clicking on the
-    search button loads the available activities from the provided <b>Hub</b>, and can then be selected from a dropdown list. Switching
-    back to the imput field will show the <i>ID</i> in the field. The <b>Label</b> field below will show the <b>Activity</b> label.
+    An <i class="fa fa-television" /> <b>Activity</b> that is set up on the Harmony Hub needs to be selected. The dropdown loads available activities automatically, 
+    if needed the list can be refreshed by clicking on the <i class="fa fa-refresh" /> button next to the dropdown.
+    Selecting an activity changes the available commands below, therefore when changing the activity, you'll need to reselect a command below.
 	</p>
 	<p>
-    A <b>Command</b> from the selected <b>Activity</b> needs to be provided, it's a stanza <i>query</i>. Clicking on the
-    search button loads the available commands from the provided <b>Activity</b>, that can then be selected from a list. Switching
-    back to the input field will show the <i>query</i> string in the field.
+    A <i class="fa fa-keyboard-o"/> <b>Command</b> from the selected <i class="fa fa-television" /> <b>Activity</b> needs to be provided, it's a stanza <i>query</i>. The dropdown loads available commands 
+    for the selected activity automatically, if needed the list can be refreshed by clicking on the <i class="fa fa-refresh" /> button next to the dropdown.
 	</p>
     <p>
-    The <b>Repeat</b> field allows for the command to be repeated. The default is <i>1</i>, meaning the command is send once.
+    The <i class="fa fa-repeat" /> <b>Repeat</b> field allows for the command to be repeated. The default is <i>1</i>, meaning the command is send once.
     For example entering <i>10</i> will send the command exactly 10 times. This can be helpful when using commands
     for volume or channels.
     </p>
