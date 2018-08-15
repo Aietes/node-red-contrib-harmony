@@ -35,7 +35,7 @@ You can install the extension simply in Node-RED in your browser, by default und
 
 ## Usage / Available nodes
 
-Four nodes are available in Node-RED: **H command**, **H activity**, **H device command** and **H observe**, located in the group **harmony**.
+Three nodes are available in Node-RED: **H command**, **H activity**, and **H observe**, located in the group **harmony**.
 
 ### H command
 
@@ -43,9 +43,9 @@ A node to send a **Command** to a Harmony Hub through Node-RED.
 
 A Harmony **Hub** needs to be selected from the list or created by clicking on the edit button. The Harmony Hub **IP** address can be autodetected by clicking on the search button in the configuration node.
 
-An **Activity** that is set up on the Harmony Hub needs to be provided, it's identified by its *ID*. Clicking on the search button loads the available activities from the provided **Hub**, which can then be selected from a dropdown list. Switching back to the imput field will show the *ID* in the field. The **Label** field below will show the **Activity** label.
+An **Activity** or **Device** that is set up on the Harmony Hub needs to be selected. The dropdown loads available activities and devices automatically, if needed the list can be refreshed by clicking on the refresh button next to the dropdown. Selecting an activity or device changes the available commands below, therefore you'll need to reselect a command below.
 
-A **Command** from the selected **Activity** needs to be provided, it's a stanza *query*. Clicking on the search button loads the available commands from the provided **Activity**, that can then be selected from a list. Switching back to the input field will show the *query* string in the field.
+A **Command** needs to be selected. The dropdown loads available commands for the selected activity or device automatically, if needed the list can be refreshed by clicking on the refresh button next to the dropdown.
 
 The **Repeat** field allows for the command to be repeated. The default is *1*, meaning the command is send once. For example entering *10* will send the command exactly 10 times. This can be helpful when using commands for volume or channels.
 
@@ -58,27 +58,11 @@ A node to activate an **Activity** on a Harmony Hub through Node-RED
 A Harmony **Hub** needs to be selected from the list or created by clicking on the edit button. The Harmony Hub
 **IP** address can be autodetected by clicking on the search button in the configuration node.
 
-An **Activity** that is set up on the Harmony Hub needs to be provided, it's identified by its *ID*. Clicking on the
-search button loads the available activities from the provided **Hub**, which can then be selected from a dropdown list. Switching
-back to the input field will show the *ID* in the field. The **Label** field below will show the **Activity** label.
+An **Activity** that is set up on the Harmony Hub needs to be selected. The dropdown loads available activities automatically, if needed the list can be refreshed by clicking on the refresh button next to the dropdown.
 
 To switch off, select *PowerOff* from the **Activity** dropdown list, or enter *"-1"* into the field.
 
 The command configured in the node will be triggered by any input injected into the node, the output slot will return *msg.payload = true* if the command was sent successfully.
-
-### H device command
-
-A node to send a **Device Command** to a Harmony Hub through Node-RED.
-
-A Harmony **Hub** needs to be selected from the list or created by clicking on the edit button. The Harmony Hub **IP** address can be autodetected by clicking on the search button in the configuration node.
-
-A **Device** that is set up on the Harmony Hub needs to be provided, it's identified by its *ID*. Clicking on the search button loads the available devices from the provided **Hub**, which can then be selected from a dropdown list. Switching back to the imput field will show the *ID* in the field. The **Label** field below will show the **Device** label.
-
-A **Command** from the selected **Device** needs to be provided, it's a stanza *query*. Clicking on the search button loads the available commands from the provided **Device**, that can then be selected from a list. Switching back to the input field will show the *query* string in the field.
-
-The **Repeat** field allows for the command to be repeated. The default is *1*, meaning the command is send once. For example entering *10* will send the command exactly 10 times. This can be helpful when using commands for volume or channels.
-
-The command configured in the node will be triggered by any input injected into the node, the output slot will return *msg.payload = true* if the command was sent successfully
 
 ### H observe
 
@@ -90,7 +74,7 @@ A Harmony **Hub** needs to be selected from the list or created by clicking on t
 When an **Activity** is switched on the Harmony Hub, the node sends an object with a payload to the output:
 `payload: { activityId: activityId, activityStatus: activityStatus }`
 The *activityId* is the ID of the current activity, the *activityStatus* represents the following states:
-0 = Hub is off, 1 = Activity is starting, 2 = Activity is started, 3 = Hub is turning off
+0 = Hub is off, 1 = Activity is starting, 2 = Activity is started, 3 = Hub is turning off.
 
 ## Built With
 
@@ -116,4 +100,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-This Node-RED module is based on the great work of **Manuel Alabor** - [swissmanu](https://github.com/swissmanu), using his [harmonyhubjs-client](https://github.com/swissmanu/harmonyhubjs-client) and [harmonyhubjs-discover](https://github.com/swissmanu/harmonyhubjs-discover) libraries.
+This Node-RED module is based on the great work of
+**Manuel Alabor** [swissmanu](https://github.com/swissmanu) and
+**Daniel Freese** [AirBorne04](https://github.com/AirBorne04), using his [harmonyhub](https://github.com/AirBorne04/harmonyhub) client and discover libraries.

@@ -31,13 +31,14 @@
     <b>IP</b> address can be autodetected by clicking on the search button in the configuration node.
 	</p>
 	<p>
-    An <i class="fa fa-television" /> <b>Activity</b> that is set up on the Harmony Hub needs to be selected. The dropdown loads available activities automatically, 
+    An <i class="fa fa-television" /> <b>Activity</b> or <i class="fa fa-television" /> <b>Device</b> that is set up on the Harmony Hub needs to be selected. 
+    The dropdown loads available activities and devices automatically, 
     if needed the list can be refreshed by clicking on the <i class="fa fa-refresh" /> button next to the dropdown.
-    Selecting an activity changes the available commands below, therefore when changing the activity, you'll need to reselect a command below.
+    Selecting an activity or device changes the available commands below, therefore you'll need to reselect a command below.
 	</p>
 	<p>
-    A <i class="fa fa-keyboard-o"/> <b>Command</b> from the selected <i class="fa fa-television" /> <b>Activity</b> needs to be provided, it's a stanza <i>query</i>. The dropdown loads available commands 
-    for the selected activity automatically, if needed the list can be refreshed by clicking on the <i class="fa fa-refresh" /> button next to the dropdown.
+    A <i class="fa fa-keyboard-o"/> <b>Command</b> needs to be selected. The dropdown loads available commands 
+    for the selected activity or device automatically, if needed the list can be refreshed by clicking on the <i class="fa fa-refresh" /> button next to the dropdown.
 	</p>
     <p>
     The <i class="fa fa-repeat" /> <b>Repeat</b> field allows for the command to be repeated. The default is <i>1</i>, meaning the command is send once.
@@ -121,66 +122,6 @@
                         .fail(function(err) {
                             RED.notify(err.responseText, "error")
                         })
-
-/*                    Promise.all([
-                        $.get('harmony/activities', { ip: config.ip } ),
-                        $.get('harmony/devices', { ip: config.ip } )
-                    ]).then(function(results){
-                        var acts = JSON.parse( results[0])
-                            $('#node-input-activity').empty()
-                            if(!acts || acts.length <= 0) {
-                                //$('#node-input-activity').append("<option value='' selected>No activities</option>")
-                                RED.notify("No activities found.", "error")
-                            } else {
-                                acts.forEach(function(act){
-                                    if(act.id > 0) $('#node-input-activity').append('<option harmonyType="act" value="' + act.id + '">' + act.label + '</option>')
-                                })
-                            }
-                        var devices = JSON.parse(data);
-                                if(!devices || devices.length <= 0) {
-                                    RED.notify("No devices found.", "error")
-                                } else {
-                                    devices.forEach(function(device){
-                                        $('#node-input-activity').append('<option harmonyType="dev" value="' + encodeURI(device.id) + '">' + device.label + '</option>')
-                                    })
-                                }
-                        $('#node-input-activity').removeAttr("disabled")
-                        $('#node-input-activity').val(selected_act)
-                    }).catch( err => {
-                        RED.notify(err.responseText, "error")
-                    })
-
-                    $.get('harmony/activities', { ip: config.ip } )
-                        .done(function(data) {
-                            var acts = JSON.parse(data);
-                            $('#node-input-activity').empty()
-                            if(!acts || acts.length <= 0) {
-                                //$('#node-input-activity').append("<option value='' selected>No activities</option>")
-                                RED.notify("No activities found.", "error")
-                            } else {
-                                acts.forEach(function(act){
-                                    if(act.id > 0) $('#node-input-activity').append('<option harmonyType="act" value="' + act.id + '">' + act.label + '</option>')
-                                })
-                            }
-                        }).then(function(){
-                            $.get('harmony/devices', { ip: config.ip } )
-                                .done(function(data) {
-                                    var devices = JSON.parse(data);
-                                    if(!devices || devices.length <= 0) {
-                                        RED.notify("No devices found.", "error")
-                                    } else {
-                                        devices.forEach(function(device){
-                                            $('#node-input-activity').append('<option harmonyType="dev" value="' + encodeURI(device.id) + '">' + device.label + '</option>')
-                                        });
-                                    }
-                                    $('#node-input-activity').removeAttr("disabled");
-                                    $('#node-input-activity').val(selected_act) 
-                                }).fail(function(err) {
-                                    RED.notify(err.responseText, "error");
-                                });
-                        }).fail(function(err) {
-                            RED.notify(err.responseText, "error")
-                        }) */
                 }          
             }
 
@@ -198,14 +139,12 @@
                                     RED.notify("No commands found.", "error")
                                 } else {
                                     comms.forEach(function(comm){
-                                        //comm.function.forEach(function(item){
-                                            $('#node-input-command').append('<option value="' + encodeURI(comm.action.replace(/\:/g, '::')) + '">' + comm.label + '</option>')
-                                        //})
+                                        $('#node-input-command').append('<option value="' + encodeURI(comm.action.replace(/\:/g, '::')) + '">' + comm.label + '</option>')
                                     })
                                     if( selected_comm != null ){
                                         $('#node-input-command').val(selected_comm)
                                     }
-                                    $('#node-input-command').removeAttr("disabled");  
+                                    $('#node-input-command').removeAttr("disabled")  
                                 }
                             }).fail(function(err) {
                                 RED.notify(err.responseText, "error");
@@ -220,7 +159,7 @@
                                     RED.notify("No commands found.", "error")
                                 } else {
                                     comms.forEach(function(comm) {
-                                        $('#node-input-command').append('<option value="' + encodeURI(comm.action.replace(/\:/g, '::')) + '">' + comm.label + '</option>');
+                                        $('#node-input-command').append('<option value="' + encodeURI(comm.action.replace(/\:/g, '::')) + '">' + comm.label + '</option>')
                                     });
                                     if( selected_comm != null ){
                                         $('#node-input-command').val(selected_comm)
@@ -255,28 +194,24 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-activity"><i class="fa fa-lightbulb-o"></i> Activity</label>
-        <input type="text" id="node-input-activity" style="width: 57%;" />
-        <a id="node-input-scan" class="editor-button"><i class="fa fa-search"></i></a>
-    </div>
-    <div class="form-row">
-        <label for="node-input-label"><i class="icon-tag"></i> Label</label>
-        <input type="text" id="node-input-label" style="width: 57%;" disabled/>
+        <label for="node-input-activity"><i class="fa fa-television"></i> Activity</label>
+        <select id="node-input-activity" style="width: 60%;"></select>
+        <a id="node-input-scan" class="editor-button"><i class="fa fa-refresh"></i></a>
     </div>
 </script>
 <script type="text/x-red" data-help-name="H activity">
-    <p>A node to activate an <b>Activity</b> on a Harmony Hub through Node-RED</p>
+    <p>A node to start an <b>Activity</b> on a Harmony Hub through Node-RED.</p>
     <p>
-    A Harmony <b>Hub</b> needs to be selected from the list or created by clicking on the edit button. The Harmony Hub
+    A Harmony <i class="fa fa-server" /> <b>Hub</b> needs to be selected from the list or created by clicking on the edit button. The Harmony Hub
     <b>IP</b> address can be autodetected by clicking on the search button in the configuration node.
 	</p>
 	<p>
-	An <b>Activity</b> that is set up on the Harmony Hub needs to be provided, it's identified by its <i>ID</i>. Clicking on the
-    search button loads the available activities from the provided <b>Hub</b>, and can then be selected from a dropdown list. Switching
-    back to the input field will show the <i>ID</i> in the field. The <b>Label</b> field below will show the <b>Activity</b> label.
+    An <i class="fa fa-television" /> <b>Activity</b> that is set up on the Harmony Hub needs to be selected. 
+    The dropdown loads available activities automatically, 
+    if needed the list can be refreshed by clicking on the <i class="fa fa-refresh" /> button next to the dropdown.
 	</p>
     <p>
-    To switch off, select <i>PowerOff</i> from the <b>Activity</b> dropdown list, or enter <i>"-1"</i> into the field.
+    To switch off, select <i>PowerOff</i> from the <b>Activity</b> dropdown list.
     </p>
 	<p>
     The command configured in the node will be triggered by any input injected into the node, the output slot will return <i>msg.payload = true</i>
@@ -302,50 +237,44 @@
         },
         oneditprepare: function() {
 
-            var config = RED.nodes.node($('#node-input-server').val());
+            var config = RED.nodes.node($('#node-input-server').val())
 
-            function toggleSelect() {
-                var current = $('#node-input-activity').val();
-                $('#node-input-scan').html("<i class='fa fa-search'></i>");
-                $('#node-input-activity').replaceWith('<input type="text" id="node-input-activity" style="width: 57%;"/>');
-                $('#node-input-activity').val(current);
-            }
+            loadActivities(this.activity)
 
-            function toggleInput() {
-                var current = $('#node-input-activity').val();
-                $('#node-input-activity').val("Loading activities...")
+            $('#node-input-scan').click( function() {
+                loadActivities($('#node-input-activity').val())
+            })
 
+            function loadActivities(selected_act){
                 if (config && config.ip) {
+                    $('#node-input-activity').attr("disabled", "disabled")
+                    $('#node-input-activity').append("<option value='' selected>Loading activities...</option>")
+                    
                     $.get('harmony/activities', { ip: config.ip } )
                         .done(function(data) {
                             var acts = JSON.parse(data);
-                            $('#node-input-scan').html("<i class='fa fa-i-cursor'></i>");
-                            $('#node-input-activity').replaceWith('<select id="node-input-activity" style="width: 60%;"></select>');
-                            $('#node-input-activity').on('change', function() {
-                                $('#node-input-label').val($('#node-input-activity option:selected').text());
-                            });
+                            $('#node-input-activity').empty()
                             if(!acts || acts.length <= 0) {
-                                RED.notify("No activities found.", "error");
-                                return;
+                                //$('#node-input-activity').append("<option value='' selected>No activities</option>")
+                                RED.notify("No activities found.", "error")
+                            } else {
+                                acts.forEach(function(act){
+                                    $('#node-input-activity').append('<option harmonyType="act" value="' + act.id + '">' + act.label + '</option>')
+                                })
+                                $('#node-input-activity').removeAttr("disabled")
+                                $('#node-input-activity').val(selected_act) 
                             }
-                            acts.forEach(function(act){
-                                $('#node-input-activity').append('<option value="' + act.id + '">' + act.label + '</option>');
-                            });
-                            $('#node-input-activity').val(current);
-                        }).fail(function(err) {
-                            RED.notify(err.responseText, "error");
-                        });
-                }
+                        })
+                        .fail(function(err) {
+                            RED.notify(err.responseText, "error")
+                        })
+                }          
             }
 
-            $('#node-input-scan').click( function() {
-                if ($('#node-input-activity').prop("tagName") === "INPUT") {
-                    toggleInput();
-                } else {
-                    toggleSelect();
-                }
-            });
-
+        },
+        oneditsave: function() {
+            this.activity = $('#node-input-activity').val();
+            this.label = $('select#node-input-activity option:selected').text();
         }
     });
 </script>

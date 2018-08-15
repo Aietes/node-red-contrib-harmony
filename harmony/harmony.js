@@ -82,7 +82,6 @@ module.exports = function (RED) {
     setTimeout(function () {
       try {
         node.server.harmonyEventEmitter.on('stateDigest', function (digest) {
-          // console.log(JSON.stringify(digest));
           try {
             node.send({
               payload: {
