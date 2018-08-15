@@ -93,7 +93,36 @@
                     $('#node-input-activity').attr("disabled", "disabled")
                     $('#node-input-activity').append("<option value='' selected>Loading activities...</option>")
 
-                    Promise.all([
+                    $.when( $.get('harmony/activities', { ip: config.ip } ),  $.get('harmony/devices', { ip: config.ip } ) )
+                        .done(function( a1, a2 ) {
+                            // a1 and a2 are arguments resolved for the page1 and page2 ajax requests, respectively.
+                            // Each argument is an array with the following structure: [ data, statusText, jqXHR ]
+                            var acts = JSON.parse( a1[0] )
+                            $('#node-input-activity').empty()
+                            if(!acts || acts.length <= 0) {
+                                //$('#node-input-activity').append("<option value='' selected>No activities</option>")
+                                RED.notify("No activities found.", "error")
+                            } else {
+                                acts.forEach(function(act){
+                                    if(act.id > 0) $('#node-input-activity').append('<option harmonyType="act" value="' + act.id + '">' + act.label + '</option>')
+                                })
+                            }
+                            var devices = JSON.parse( a2[0] )
+                            if(!devices || devices.length <= 0) {
+                                RED.notify("No devices found.", "error")
+                            } else {
+                                devices.forEach(function(device){
+                                    $('#node-input-activity').append('<option harmonyType="dev" value="' + encodeURI(device.id) + '">' + device.label + '</option>')
+                                })
+                            }
+                            $('#node-input-activity').removeAttr("disabled")
+                            $('#node-input-activity').val(selected_act)
+                        })
+                        .fail(function(err) {
+                            RED.notify(err.responseText, "error")
+                        })
+
+/*                    Promise.all([
                         $.get('harmony/activities', { ip: config.ip } ),
                         $.get('harmony/devices', { ip: config.ip } )
                     ]).then(function(results){
@@ -121,7 +150,7 @@
                         RED.notify(err.responseText, "error")
                     })
 
-/*                     $.get('harmony/activities', { ip: config.ip } )
+                    $.get('harmony/activities', { ip: config.ip } )
                         .done(function(data) {
                             var acts = JSON.parse(data);
                             $('#node-input-activity').empty()
