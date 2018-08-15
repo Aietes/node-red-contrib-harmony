@@ -53,7 +53,7 @@ module.exports = function (RED) {
     })
 
     discover.start()
-    //setTimeout(discover.stop, 5000)
+    setTimeout(discover.stop, 5000)
   })
 
   RED.httpAdmin.get('/harmony/activities', function (req, res, next) {
@@ -99,12 +99,23 @@ module.exports = function (RED) {
               res.status(500).send('Request failed.')
               if (err) throw err
             }).then(function (acts) {
-              acts.some(function (act) {
-                if (act.id === req.query.activity) {
-                  harmony.end()
-                  res.status(200).send(JSON.stringify(act.controlGroup))
-                }
-              })
+              var act = acts
+                .filter(function (act) {
+                  return act.id === req.query.activity
+                })
+                .pop()
+              var commands = act.controlGroup
+                .map(function (group) {
+                  return group.function
+                })
+                .reduce(function (prev, curr) {
+                  return prev.concat(curr)
+                })
+                .map(function (fn) {
+                  return {action: fn.action, label: fn.label}
+                })
+              harmony.end()
+              res.status(200).send(JSON.stringify(commands))
             })
         })
     }
