@@ -82,17 +82,46 @@
 
             $('#node-input-commandscan').click( function() {
                 loadCommands($('#node-input-activity').val(),$('#node-input-command').val(),$('select#node-input-activity option:selected').attr('harmonyType'))
-            });
+            })
 
             $('#node-input-activity').on('change', function() {
                 loadCommands(this.value,null,$('select#node-input-activity option:selected').attr('harmonyType'))
-            });
+            })
 
             function loadActivities(selected_act){
                 if (config && config.ip) {
                     $('#node-input-activity').attr("disabled", "disabled")
                     $('#node-input-activity').append("<option value='' selected>Loading activities...</option>")
-                    $.get('harmony/activities', { ip: config.ip } )
+
+                    Promise.all([
+                        $.get('harmony/activities', { ip: config.ip } ),
+                        $.get('harmony/devices', { ip: config.ip } )
+                    ]).then(function(results){
+                        var acts = JSON.parse( results[0])
+                            $('#node-input-activity').empty()
+                            if(!acts || acts.length <= 0) {
+                                //$('#node-input-activity').append("<option value='' selected>No activities</option>")
+                                RED.notify("No activities found.", "error")
+                            } else {
+                                acts.forEach(function(act){
+                                    if(act.id > 0) $('#node-input-activity').append('<option harmonyType="act" value="' + act.id + '">' + act.label + '</option>')
+                                })
+                            }
+                        var devices = JSON.parse(data);
+                                if(!devices || devices.length <= 0) {
+                                    RED.notify("No devices found.", "error")
+                                } else {
+                                    devices.forEach(function(device){
+                                        $('#node-input-activity').append('<option harmonyType="dev" value="' + encodeURI(device.id) + '">' + device.label + '</option>')
+                                    })
+                                }
+                        $('#node-input-activity').removeAttr("disabled")
+                        $('#node-input-activity').val(selected_act)
+                    }).catch( err => {
+                        RED.notify(err.responseText, "error")
+                    })
+
+/*                     $.get('harmony/activities', { ip: config.ip } )
                         .done(function(data) {
                             var acts = JSON.parse(data);
                             $('#node-input-activity').empty()
@@ -122,7 +151,7 @@
                                 });
                         }).fail(function(err) {
                             RED.notify(err.responseText, "error")
-                        })
+                        }) */
                 }          
             }
 
