@@ -30,7 +30,7 @@ module.exports = function (RED) {
               node.send({payload: false})
               if (err) throw err
             }).then(function (response) {
-              node.server.harmony.request('holdAction', 'action=' + action + ':status=press' + ':timestamp=50')
+              node.server.harmony.request('holdAction', 'action=' + action + ':status=release' + ':timestamp=50')
                 .catch(function (err) {
                   node.send({payload: false})
                   console.log('Error: ' + err)
