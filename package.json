@@ -1,11 +1,11 @@
 {
   "name": "node-red-contrib-harmony",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "Harmony integration for Node-RED",
   "license": "MIT",
   "dependencies": {
-    "@harmonyhub/client": "^1.0.2",
-    "@harmonyhub/discover": "^1.0.2"
+    "@harmonyhub/client": "^1.0.4",
+    "@harmonyhub/discover": "^1.0.4"
   },
   "repository": {
     "type": "git",
