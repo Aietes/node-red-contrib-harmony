@@ -4,9 +4,13 @@
       <input type="text" id="node-config-input-name" />
   </div>
   <div class="form-row">
-      <label for="node-config-input-ip"><i class="fa fa-server"></i> IP</label>
-      <input type="text" id="node-config-input-ip" style="width: 60%;"/>
-      <a id="node-config-input-scan" class="editor-button"><i class="fa fa-search"></i></a>
+      <label for="node-config-input-ip-select"><i class="fa fa-server"></i> Hubs</label>
+      <select id="node-config-input-ip-select" style="width: 60%;"></select>
+      <a id="node-config-input-select-trigger" class="editor-button"><i class="fa fa-search"></i></a>
+  </div>
+  <div class="form-row">
+    <label for="node-config-input-ip"><i class="fa fa-server"></i> IP</label>
+    <input type="text" id="node-config-input-ip" style="width: 60%;"/>
   </div>
 </script>
 
@@ -21,18 +25,47 @@
       return this.name ? this.name : "Harmony Server";
     },
     oneditprepare: function() {
-        $('#node-config-input-scan').click(function() {
-            $.get( 'harmony/server')
-                  .done( function(data) {
-                    var ip = JSON.parse(data);
-                    $('#node-config-input-ip').append('<option value="' + ip + '">' + ip + '</option>');
-                    $('#node-config-input-ip').val(ip);
-                    RED.notify("Harmony Hub with IP " + ip + " found.");
-                  })
-                  .fail(function() {
-                    RED.notify("Something went wrong discovering an Harmony Hub", "error");
-                  });
-        });
+
+      function scanForHubs(selected_ip){
+        $('#node-config-input-select-trigger').addClass('disabled')
+        $('#node-config-input-ip-select').attr('disabled', 'disabled')
+        $('#node-config-input-ip-select').append("<option value='' selected>Scanning for hubs...</option>")
+        $.get( 'harmony/server')
+          .done( function(data) {
+            var hubs = JSON.parse(data);
+            $('#node-config-input-ip-select').empty()
+            if(!hubs || hubs.length <= 0) {
+              $('#node-config-input-ip-select').append("<option value='' selected>No hubs</option>")
+              RED.notify("No hubs found.", "error")
+            } else {
+              hubs.forEach(function(hub){
+                  $('#node-config-input-ip-select').append('<option value="' + hub.ip + '">' + hub.ip + '</option>')
+              })
+              if( selected_ip ){
+                $('#node-config-input-ip-select').val(selected_ip)
+              }else{
+                $('#node-config-input-ip').val( $('#node-config-input-ip-select option:first').val() )
+              }
+              $('#node-config-input-ip-select').removeAttr('disabled')              
+            }
+            $('#node-config-input-select-trigger').removeClass('disabled')
+          })
+          .fail(function() {
+            RED.notify("Something went wrong discovering an Harmony Hub", "error")
+          })
+      }
+
+      scanForHubs(this.ip)
+
+      $('#node-config-input-select-trigger').click(function() {
+        if(!$('#node-config-input-select-trigger').hasClass('disabled')){
+          scanForHubs(this.ip)
+        }
+      })
+
+      $('#node-config-input-ip-select').on('change', function() {
+        $('#node-config-input-ip').val($('#node-config-input-ip-select').val())
+      })
     }
-  });
+  })
 </script>

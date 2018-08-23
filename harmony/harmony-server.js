@@ -1,6 +1,7 @@
 const HarmonyHubDiscover = require('@harmonyhub/discover').Explorer
 var harmonyClient = require('@harmonyhub/client').getHarmonyClient
 var events = require('events')
+var netstat = require('node-netstat')
 
 module.exports = function (RED) {
   function HarmonyServerNode (n) {
@@ -20,6 +21,47 @@ module.exports = function (RED) {
     })
   }
   RED.nodes.registerType('harmony-server', HarmonyServerNode)
+
+  var getNextAvailablePort = function (portRangeAsString) {
+    var portString = process.env.USE_PORT_RANGE || portRangeAsString
+
+    if (portString) {
+      var portStart, portLast
+
+      portStart = parseInt(portString.split('-')[0])
+      portLast = parseInt(portString.split('-')[1])
+
+      var portArr = []
+
+      netstat({
+        sync: true,
+        filter: {
+          local: {
+            address: null
+          }
+        }
+      }, portArr.push.bind(portArr))
+
+      portArr = portArr.map(
+        portInfo => portInfo.local.port
+      ).filter(
+        // filter port range and also the index to eliminate duplicates
+        (portNr, index, arr) => portNr >= portStart && portNr <= portLast && arr.indexOf(portNr) === index
+      )
+
+      if (portArr.length > portLast - portStart) {
+        throw new Error('No available port in the range ' + portString)
+      } else {
+        for (var i = portStart; i <= portLast; ++i) {
+          if (portArr.indexOf(i) < 0) {
+            return i
+          }
+        }
+      }
+    } else {
+      return 0
+    }
+  }
 
   function createClient (node) {
     var harmony = node.harmony
@@ -45,15 +87,19 @@ module.exports = function (RED) {
   }
 
   RED.httpAdmin.get('/harmony/server', function (req, res, next) {
-    const discover = new HarmonyHubDiscover(61991)
+    const discover = new HarmonyHubDiscover(getNextAvailablePort('5000-6000'))
+    var hubsFound
 
-    discover.on('online', function (hub) {
-      res.end(JSON.stringify(hub.ip))
-      discover.stop()
+    discover.on('update', function (hubs) {
+      hubsFound = hubs
     })
 
+    // search for hubs for 3 seconds, then return result
     discover.start()
-    setTimeout(discover.stop, 5000)
+    setTimeout(function () {
+      discover.stop()
+      res.end(JSON.stringify(hubsFound))
+    }, 3000)
   })
 
   RED.httpAdmin.get('/harmony/activities', function (req, res, next) {

@@ -5,7 +5,8 @@
   "license": "MIT",
   "dependencies": {
     "@harmonyhub/client": "^1.0.4",
-    "@harmonyhub/discover": "^1.0.4"
+    "@harmonyhub/discover": "^1.0.4",
+    "node-netstat": "latest"
   },
   "repository": {
     "type": "git",
