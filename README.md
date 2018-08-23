@@ -25,7 +25,7 @@ npm install node-red-contrib-harmony
 Then run or restart Node-RED
 
 ```
-node-red
+node red
 ```
 Open your Node-RED instance, typically under <http://localhost:1880>, and you should see the new nodes available in the palette in the group **harmony**.
 
