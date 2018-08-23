@@ -82,7 +82,6 @@ module.exports = function (RED) {
         })
       }).catch(function (err) {
         console.log('error: ' + err)
-        if (err) throw err
       })
   }
 
@@ -109,14 +108,9 @@ module.exports = function (RED) {
       harmonyClient(req.query.ip)
         .catch(function (err) {
           res.status(500).send('Request failed.')
-          if (err) throw err
         }).then(function (harmony) {
           harmony.getActivities()
-            .catch(function (err) {
-              harmony.end()
-              res.status(500).send('Request failed.')
-              if (err) throw err
-            }).then(function (acts) {
+            .then(function (acts) {
               harmony.end()
               acts = acts.map(function (action) {
                 return {
@@ -125,6 +119,10 @@ module.exports = function (RED) {
                 }
               })
               res.status(200).send(JSON.stringify(acts))
+            })
+            .catch(function (err) {
+              harmony.end()
+              res.status(500).send('Request failed.')
             })
         })
     }
@@ -135,16 +133,9 @@ module.exports = function (RED) {
       res.status(400).send('Missing argument.')
     } else {
       harmonyClient(req.query.ip)
-        .catch(function (err) {
-          res.status(500).send('Request failed.')
-          if (err) throw err
-        }).then(function (harmony) {
-          harmony.getActivities()
-            .catch(function (err) {
-              harmony.end()
-              res.status(500).send('Request failed.')
-              if (err) throw err
-            }).then(function (acts) {
+        .then(function (harmony) {
+          return harmony.getActivities()
+            .then(function (acts) {
               var act = acts
                 .filter(function (act) {
                   return act.id === req.query.activity
@@ -163,6 +154,13 @@ module.exports = function (RED) {
               harmony.end()
               res.status(200).send(JSON.stringify(commands))
             })
+            .catch(function (err) {
+              harmony.end()
+              if (err) throw err
+            })
+        })
+        .catch(function (err) {
+          res.status(500).send('Request failed.')
         })
     }
   })
@@ -172,16 +170,9 @@ module.exports = function (RED) {
       res.status(400).send('Missing argument IP')
     } else {
       harmonyClient(req.query.ip)
-        .catch(function (err) {
-          res.status(500).send('Request failed.')
-          if (err) throw err
-        }).then(function (harmony) {
-          harmony.getAvailableCommands()
-            .catch(function (err) {
-              harmony.end()
-              res.status(500).send('Request failed.')
-              if (err) throw err
-            }).then(function (commands) {
+        .then(function (harmony) {
+          return harmony.getAvailableCommands()
+            .then(function (commands) {
               var devices = commands.device
                 .filter(function (device) {
                   return device.controlGroup.length > 0
@@ -192,6 +183,13 @@ module.exports = function (RED) {
               harmony.end()
               res.status(200).send(JSON.stringify(devices))
             })
+            .catch(function (err) {
+              harmony.end()
+              if (err) throw err
+            })
+        })
+        .catch(function (err) {
+          res.status(500).send('Request failed.')
         })
     }
   })
@@ -201,16 +199,9 @@ module.exports = function (RED) {
       res.status(400).send('Missing argument.')
     } else {
       harmonyClient(req.query.ip)
-        .catch(function (err) {
-          res.status(500).send('Request failed.')
-          if (err) throw err
-        }).then(function (harmony) {
-          harmony.getAvailableCommands()
-            .catch(function (err) {
-              harmony.end()
-              res.status(500).send('Request failed.')
-              if (err) throw err
-            }).then(function (commands) {
+        .then(function (harmony) {
+          return harmony.getAvailableCommands()
+            .then(function (commands) {
               var device = commands.device.filter(function (device) {
                 return device.id === req.query.deviceId
               }).pop()
@@ -227,6 +218,13 @@ module.exports = function (RED) {
               harmony.end()
               res.status(200).send(JSON.stringify(deviceCommands))
             })
+            .catch(function (err) {
+              harmony.end()
+              if (err) throw err
+            })
+        })
+        .catch(function (err) {
+          res.status(500).send('Request failed.')
         })
     }
   })
