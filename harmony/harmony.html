@@ -88,6 +88,10 @@
             $('#node-input-activity').on('change', function() {
                 loadCommands(this.value,null,$('select#node-input-activity option:selected').attr('harmonyType'))
             })
+            $('#node-input-server').on('change', function() {
+                config = RED.nodes.node(this.value)
+                loadActivities(this.activity)
+            })
 
             function loadActivities(selected_act){
                 if (config && config.ip) {

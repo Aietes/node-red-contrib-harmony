@@ -86,7 +86,7 @@ module.exports = function (RED) {
   }
 
   RED.httpAdmin.get('/harmony/server', function (req, res, next) {
-    const discover = new HarmonyHubDiscover(getNextAvailablePort('5000-6000'))
+    const discover = new HarmonyHubDiscover(getNextAvailablePort('5002-5100'))
     var hubsFound
 
     discover.on('update', function (hubs) {
