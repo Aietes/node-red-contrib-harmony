@@ -4,8 +4,8 @@
   "description": "Harmony integration for Node-RED",
   "license": "MIT",
   "dependencies": {
-    "@harmonyhub/client": "^1.0.4",
-    "@harmonyhub/discover": "^1.0.4",
+    "@harmonyhub/client": "latest",
+    "@harmonyhub/discover": "latest",
     "node-netstat": "latest"
   },
   "repository": {
