@@ -52,6 +52,54 @@ A **Command** needs to be selected. The dropdown loads available commands for th
 
 The **Repeat** field allows for the command to be repeated. The default is *1*, meaning the command is send once. For example entering *10* will send the command exactly 10 times. This can be helpful when using commands for volume or channels.
 
+The **delay** field allows for a ms delay between press and release
+The **presstimestamp** field controls the timestamp sent to the api on press
+The **releasetimestamp** field controls the timestamp sent to the api on release
+
+The command configured in the node will be triggered by any input injected into the node, the output slot will return *msg.payload = true* if the command was sent successfully.
+
+### H press
+
+A node to send a **button press** to a Harmony Hub through Node-RED.
+
+A Harmony **Hub** needs to be selected from the list or created by clicking on the edit button. The Harmony Hub **IP** address can be autodetected by clicking on the search button in the configuration node.
+
+An **Activity** or **Device** that is set up on the Harmony Hub needs to be selected. The dropdown loads available activities and devices automatically, if needed the list can be refreshed by clicking on the refresh button next to the dropdown. Selecting an activity or device changes the available commands below, therefore you'll need to reselect a command below.
+
+A **Command** needs to be selected. The dropdown loads available commands for the selected activity or device automatically, if needed the list can be refreshed by clicking on the refresh button next to the dropdown.
+
+The **Repeat** field allows for the command to be repeated. The default is *1*, meaning the command is send once. For example entering *10* will send the command exactly 10 times. This can be helpful when using commands for volume or channels.
+The **timestamp** field controls the timestamp sent to the api
+
+The command configured in the node will be triggered by any input injected into the node, the output slot will return *msg.payload = true* if the command was sent successfully.
+
+### H release
+
+A node to send a **button release** to a Harmony Hub through Node-RED.
+
+A Harmony **Hub** needs to be selected from the list or created by clicking on the edit button. The Harmony Hub **IP** address can be autodetected by clicking on the search button in the configuration node.
+
+An **Activity** or **Device** that is set up on the Harmony Hub needs to be selected. The dropdown loads available activities and devices automatically, if needed the list can be refreshed by clicking on the refresh button next to the dropdown. Selecting an activity or device changes the available commands below, therefore you'll need to reselect a command below.
+
+A **Command** needs to be selected. The dropdown loads available commands for the selected activity or device automatically, if needed the list can be refreshed by clicking on the refresh button next to the dropdown.
+
+The **Repeat** field allows for the command to be repeated. The default is *1*, meaning the command is send once. For example entering *10* will send the command exactly 10 times. This can be helpful when using commands for volume or channels.
+The **timestamp** field controls the timestamp sent to the api
+
+The command configured in the node will be triggered by any input injected into the node, the output slot will return *msg.payload = true* if the command was sent successfully.
+
+### H hold
+
+A node to send a **button hold** to a Harmony Hub through Node-RED.
+
+A Harmony **Hub** needs to be selected from the list or created by clicking on the edit button. The Harmony Hub **IP** address can be autodetected by clicking on the search button in the configuration node.
+
+An **Activity** or **Device** that is set up on the Harmony Hub needs to be selected. The dropdown loads available activities and devices automatically, if needed the list can be refreshed by clicking on the refresh button next to the dropdown. Selecting an activity or device changes the available commands below, therefore you'll need to reselect a command below.
+
+A **Command** needs to be selected. The dropdown loads available commands for the selected activity or device automatically, if needed the list can be refreshed by clicking on the refresh button next to the dropdown.
+
+The **Repeat** field allows for the command to be repeated. The default is *1*, meaning the command is send once. For example entering *10* will send the command exactly 10 times. This can be helpful when using commands for volume or channels.
+The **timestamp** field controls the timestamp sent to the api
 The command configured in the node will be triggered by any input injected into the node, the output slot will return *msg.payload = true* if the command was sent successfully.
 
 ### H activity
@@ -66,6 +114,9 @@ An **Activity** that is set up on the Harmony Hub needs to be selected. The drop
 To switch off, select *PowerOff* from the **Activity** dropdown list, or enter *"-1"* into the field.
 
 The command configured in the node will be triggered by any input injected into the node, the output slot will return *msg.payload = true* if the command was sent successfully.
+
+### H GetActivity
+A node to get the numeric ID of the current **Activity**
 
 ### H observe
 
@@ -96,6 +147,7 @@ The *activityId* is the ID of the current activity, the *activityStatus* represe
 
 * **Stefan Krüger** - *Initial work* - [Aietes](https://github.com/Aietes)
 * **Daniel Freese** - *Coding help* - [AirBorne04](https://github.com/AirBorne04)
+* ** Martin Walker ** - *this fork* - [marsjupiter1]https://github.com/marsjupiter1)
 
 ## License
 
