@@ -9,7 +9,7 @@ module.exports = function (RED) {
     node.command = n.command
     node.harmony_type = n.harmony_type
     node.repeat = Number.parseInt(n.repeat) || 1
-    node.releasetimestamp = Number.parseInt(n.releasetimestamp) || S0
+    node.releasetimestamp = Number.parseInt(n.releasetimestamp) || 50
     node.presstimestamp = Number.parseInt(n.presstimestamp) || 0
     node.delay = Number.parseInt(n.delay) || 0
     if (!node.server) return
