@@ -10,7 +10,7 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-activity"><i class="fa fa-television"></i> Activity</label>
+        <label for="node-input-activity"><i class="fa fa-television"></i> Activity/Device</label>
         <select id="node-input-activity" style="width: 60%;"></select>
         <a id="node-input-scan" class="editor-button"><i class="fa fa-refresh"></i></a>
     </div>
@@ -123,7 +123,7 @@
             function loadActivities(selected_act){
                 if (config && config.ip) {
                     $('#node-input-activity').attr("disabled", "disabled")
-                    $('#node-input-activity').append("<option value='' selected>Loading activities...</option>")
+                    $('#node-input-activity').append("<option value='' selected>Loading activities and devices...</option>")
 
                     $.when( $.get('harmony/activities', { ip: config.ip } ),  $.get('harmony/devices', { ip: config.ip } ) )
                         .done(function( a1, a2 ) {
@@ -135,6 +135,7 @@
                                 //$('#node-input-activity').append("<option value='' selected>No activities</option>")
                                 RED.notify("No activities found.", "error")
                             } else {
+                                $('#node-input-activity').append('<option harmonyType="act" value="-1">Turn Off</option>')
                                 acts.forEach(function(act){
                                     if(act.id > 0) $('#node-input-activity').append('<option harmonyType="act" value="' + act.id + '">' + act.label + '</option>')
                                 })
@@ -160,7 +161,9 @@
                 if (config && config.ip && act_id) {
                     $('#node-input-command').attr("disabled", "disabled")
                     $('#node-input-command').append("<option value='' selected>Loading commands...</option>")
-                    if(harmony_type == "act"){
+                    if (act_id == -1){
+                        $('#node-input-command').empty()
+                    } else if(harmony_type == "act"){
                         $.get('harmony/commands', { ip: config.ip, activity: act_id } )
                             .done(function(data) {
                                 var comms = JSON.parse(data);
@@ -225,7 +228,7 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-activity"><i class="fa fa-television"></i> Activity</label>
+        <label for="node-input-activity"><i class="fa fa-television"></i> Activity/Device</label>
         <select id="node-input-activity" style="width: 60%;"></select>
         <a id="node-input-scan" class="editor-button"><i class="fa fa-refresh"></i></a>
     </div>
@@ -319,7 +322,7 @@
             function loadActivities(selected_act){
                 if (config && config.ip) {
                     $('#node-input-activity').attr("disabled", "disabled")
-                    $('#node-input-activity').append("<option value='' selected>Loading activities...</option>")
+                    $('#node-input-activity').append("<option value='' selected>Loading activities and devices...</option>")
 
                     $.when( $.get('harmony/activities', { ip: config.ip } ),  $.get('harmony/devices', { ip: config.ip } ) )
                         .done(function( a1, a2 ) {
@@ -421,7 +424,7 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-activity"><i class="fa fa-television"></i> Activity</label>
+        <label for="node-input-activity"><i class="fa fa-television"></i> Activity/Device</label>
         <select id="node-input-activity" style="width: 60%;"></select>
         <a id="node-input-scan" class="editor-button"><i class="fa fa-refresh"></i></a>
     </div>
@@ -515,7 +518,7 @@
             function loadActivities(selected_act){
                 if (config && config.ip) {
                     $('#node-input-activity').attr("disabled", "disabled")
-                    $('#node-input-activity').append("<option value='' selected>Loading activities...</option>")
+                    $('#node-input-activity').append("<option value='' selected>Loading activities and devices...</option>")
 
                     $.when( $.get('harmony/activities', { ip: config.ip } ),  $.get('harmony/devices', { ip: config.ip } ) )
                         .done(function( a1, a2 ) {
@@ -618,7 +621,7 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-activity"><i class="fa fa-television"></i> Activity</label>
+        <label for="node-input-activity"><i class="fa fa-television"></i> Activity/Device</label>
         <select id="node-input-activity" style="width: 60%;"></select>
         <a id="node-input-scan" class="editor-button"><i class="fa fa-refresh"></i></a>
     </div>
@@ -712,7 +715,7 @@
             function loadActivities(selected_act){
                 if (config && config.ip) {
                     $('#node-input-activity').attr("disabled", "disabled")
-                    $('#node-input-activity').append("<option value='' selected>Loading activities...</option>")
+                    $('#node-input-activity').append("<option value='' selected>Loading activities and devices...</option>")
 
                     $.when( $.get('harmony/activities', { ip: config.ip } ),  $.get('harmony/devices', { ip: config.ip } ) )
                         .done(function( a1, a2 ) {
@@ -861,7 +864,7 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-activity"><i class="fa fa-television"></i> Activity</label>
+        <label for="node-input-activity"><i class="fa fa-television"></i> Activity/Device</label>
         <select id="node-input-activity" style="width: 60%;"></select>
         <a id="node-input-scan" class="editor-button"><i class="fa fa-refresh"></i></a>
     </div>
@@ -915,7 +918,7 @@
             function loadActivities(selected_act){
                 if (config && config.ip) {
                     $('#node-input-activity').attr("disabled", "disabled")
-                    $('#node-input-activity').append("<option value='' selected>Loading activities...</option>")
+                    $('#node-input-activity').append("<option value='' selected>Loading activities and devices...</option>")
                     
                     $.get('harmony/activities', { ip: config.ip } )
                         .done(function(data) {

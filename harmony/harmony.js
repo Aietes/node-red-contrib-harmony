@@ -1,5 +1,5 @@
 module.exports = function (RED) {
-  function HarmonySendCommand (n) {
+   function HarmonySendCommand (n) {
     RED.nodes.createNode(this, n)
     var node = this
 
@@ -32,13 +32,13 @@ module.exports = function (RED) {
               node.send({payload: false})
               if (err) throw err
             }).then(function (response) {
-              var waitTill = new Date(new Date().getTime() + node.delay);
-              while(waitTill > new Date()){}
-              node.server.harmony.request('holdAction', 'action=' + action + ':status=release' + ':timestamp='+node.releasetimestamp)
-                .catch(function (err) {
+              setTimeout(function(){ node.server.harmony.request('holdAction', 'action=' + action + ':status=release' + ':timestamp='+node.releasetimestamp)
+                 .catch(function (err) {
                   node.send({payload: false})
                   console.log('Error: ' + err)
-                })
+              })
+            }, node.delay);
+             
             })
         }
         node.send({payload: true})
