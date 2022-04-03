@@ -12,20 +12,24 @@ module.exports = function (RED) {
     node.releasetimestamp = Number.parseInt(n.releasetimestamp) || 50
     node.presstimestamp = Number.parseInt(n.presstimestamp) || 0
     node.delay = Number.parseInt(n.delay) || 0
-    if (!node.server) return
 
+    
+    
+    if (!node.server) {
+      node.warn("HarmonySendCommand: no server");
+      return
+    }
     var action = decodeURI(node.command)
 
     node.on('input', function (msg) {
-      try {
-        msg.payload = JSON.parse(msg.payload)
-      } catch (err) {
-        console.log('Error: ' + err)
-      }
+      var globalContext = this.context().global;
 
-      if (!node.command || !node.server) {
+      if (!node.command ) {
+        node.warn("HarmonySendCommand: missing command")
         node.send({payload: false})
       } else {
+        globalContext.set("HarmonyFunction","Command");
+        globalContext.set("HarmonyAction",action);
         for (var i = 0; i < node.repeat; i++) {
           node.server.harmony.request('holdAction', 'action=' + action + ':status=press' + ':timestamp='+node.presstimestamp)
             .catch(function (err) {
@@ -59,20 +63,20 @@ module.exports = function (RED) {
     node.repeat = Number.parseInt(n.repeat) || 1
     node.timestamp = Number.parseInt(n.timestamp) || 0
 
-    if (!node.server) return
+    if (!node.server) {
+      node.warn("HarmonySendPress: no server");
+      return
+    }
 
     var action = decodeURI(node.command)
 
     node.on('input', function (msg) {
-      try {
-        msg.payload = JSON.parse(msg.payload)
-      } catch (err) {
-        console.log('Error: ' + err)
-      }
-
+      var globalContext = this.context().global;
       if (!node.command || !node.server) {
         node.send({payload: false})
       } else {
+        globalContext.set("HarmonyFunction","Press");
+        globalContext.set("HarmonyAction",action);
         for (var i = 0; i < node.repeat; i++) {
           node.server.harmony.request('holdAction', 'action=' + action + ':status=press' + ':timestamp='+node.timestamp)
             .catch(function (err) {
@@ -100,20 +104,21 @@ module.exports = function (RED) {
     node.repeat = Number.parseInt(n.repeat) || 1
     node.timestamp = Number.parseInt(n.timestamp) || 0
 
-    if (!node.server) return
+    if (!node.server) {
+      node.warn("HarmonySendRelease: no server");
+      return
+    }
 
     var action = decodeURI(node.command)
 
     node.on('input', function (msg) {
-      try {
-        msg.payload = JSON.parse(msg.payload)
-      } catch (err) {
-        console.log('Error: ' + err)
-      }
-
+ 
       if (!node.command || !node.server) {
         node.send({payload: false})
       } else {
+        var globalContext = this.context().global;
+        globalContext.set("HarmonyFunction","Release");
+        globalContext.set("HarmonyAction",action);
         for (var i = 0; i < node.repeat; i++) {
           node.server.harmony.request('holdAction', 'action=' + action + ':status=release' + ':timestamp='+node.timestamp)
             .catch(function (err) {
@@ -141,20 +146,20 @@ module.exports = function (RED) {
     node.repeat = Number.parseInt(n.repeat) || 1
     node.timestamp = Number.parseInt(n.timestamp) || 0
 
-    if (!node.server) return
-
+    if (!node.server) {
+      node.warn("HarmonyHold: no server");
+      return
+    }
     var action = decodeURI(node.command)
 
     node.on('input', function (msg) {
-      try {
-        msg.payload = JSON.parse(msg.payload)
-      } catch (err) {
-        console.log('Error: ' + err)
-      }
 
       if (!node.command || !node.server) {
         node.send({payload: false})
       } else {
+        var globalContext = this.context().global;
+        globalContext.set("HarmonyFunction","Hold");
+        globalContext.set("HarmonyAction",action);
         for (var i = 0; i < node.repeat; i++) {
           node.server.harmony.request('holdAction', 'action=' + action + ':status=hold' + ':timestamp='+node.timestamp)
             .catch(function (err) {
@@ -180,14 +185,12 @@ module.exports = function (RED) {
     node.activity = n.activity
     node.label = n.label
 
-    if (!node.server) return
-
+    if (!node.server) {
+      node.warn("HarmonyActivity: no server");
+      return
+    }
     node.on('input', function (msg) {
-      try {
-        msg.payload = JSON.parse(msg.payload)
-      } catch (err) {
-        console.log('Error: ' + err)
-      }
+
       node.server.harmony.startActivity(node.activity)
         .catch(function (err) {
           node.send({payload: false})
@@ -205,14 +208,12 @@ module.exports = function (RED) {
 
     node.server = RED.nodes.getNode(n.server)
    
-    if (!node.server) return
-
+    if (!node.server) {
+      node.warn("HarmonyGetActivity: no server");
+      return
+    }
     node.on('input', function (msg) {
-      try {
-        msg.payload = JSON.parse(msg.payload)
-      } catch (err) {
-        console.log('Error: ' + err)
-      }
+
       node.server.harmony.getCurrentActivity()
         .catch(function (err) {
           node.send({payload: false})
@@ -233,7 +234,10 @@ module.exports = function (RED) {
     node.server = RED.nodes.getNode(n.server)
     node.label = n.label
 
-    if (!node.server) return
+    if (!node.server) {
+      node.warn("HarmonyObserve: no server");
+      return
+    }
 
     setTimeout(function () {
       try {
