@@ -227,6 +227,31 @@ module.exports = function (RED) {
 
   RED.nodes.registerType('H GetActivity', HarmonyGetActivity)
 
+  function HarmonyGetActivities (n) {
+    RED.nodes.createNode(this, n)
+    var node = this
+
+    node.server = RED.nodes.getNode(n.server)
+   
+    if (!node.server) {
+      node.warn("HarmonyGetActivities: no server");
+      return
+    }
+    node.on('input', function (msg) {
+
+      node.server.harmony.getActivities()
+        .catch(function (err) {
+          node.send({payload: false})
+          console.log('Error: ' + err)
+        }).then(function (response) {
+          //console.log('Harmony: ' + response)
+          node.send({payload: response})
+        })
+    })
+  }
+
+  RED.nodes.registerType('H GetActivities', HarmonyGetActivities)
+
   function HarmonyObserve (n) {
     RED.nodes.createNode(this, n)
     var node = this
