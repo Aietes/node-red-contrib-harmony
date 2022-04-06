@@ -1006,7 +1006,7 @@
 
 </script>
 <script type="text/x-red" data-help-name="H GetActivities">
-    <p>A node to get the available activities of a harmony hub.</p>
+    <p>A node to get the available activities of a harmony hub. Note that this will return a lot of information</p>
     <p>
     A Harmony <i class="fa fa-server" /> <b>Hub</b> needs to be selected from the list or created by clicking on the edit button, which opens the configuration node. The
     <b>IP</b> addresses of available Harmony Hubs will be autodetected, or can be entered manually in the configuration node.
@@ -1038,4 +1038,52 @@
     });
 </script>
 <!-- End H GetActivities -->
+
+<!-- Begin H GetCommands -->
+<script type="text/x-red" data-template-name="H GetCommands">
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Hub</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+ 
+
+</script>
+<script type="text/x-red" data-help-name="H GetCommands">
+    <p>A node to get the available commands of a harmony hub. Note that this will return a lot of information</p>
+    <p>
+    A Harmony <i class="fa fa-server" /> <b>Hub</b> needs to be selected from the list or created by clicking on the edit button, which opens the configuration node. The
+    <b>IP</b> addresses of available Harmony Hubs will be autodetected, or can be entered manually in the configuration node.
+	</p>
+	
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('H GetCommands',{
+        category: 'harmony',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value:""},
+            server: {type:"harmony-server", required:true},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "feed.png",
+        label: function() {
+            return this.name||"H GetCommands";
+        },
+        oneditprepare: function() {
+
+            var config = RED.nodes.node($('#node-input-server').val())
+            
+        },
+        oneditsave: function() {
+         }
+    });
+</script>
+<!-- End H GetCommands -->
+
 

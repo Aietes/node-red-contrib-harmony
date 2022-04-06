@@ -30,6 +30,7 @@ module.exports = function (RED) {
       } else {
         globalContext.set("HarmonyFunction","Command");
         globalContext.set("HarmonyAction",action);
+        globalContext.set("HarmonyDevice",node.activity);
         for (var i = 0; i < node.repeat; i++) {
           node.server.harmony.request('holdAction', 'action=' + action + ':status=press' + ':timestamp='+node.presstimestamp)
             .catch(function (err) {
@@ -119,6 +120,7 @@ module.exports = function (RED) {
         var globalContext = this.context().global;
         globalContext.set("HarmonyFunction","Release");
         globalContext.set("HarmonyAction",action);
+        globalContext.set("HarmonyDevice",node.activity);
         for (var i = 0; i < node.repeat; i++) {
           node.server.harmony.request('holdAction', 'action=' + action + ':status=release' + ':timestamp='+node.timestamp)
             .catch(function (err) {
@@ -160,6 +162,7 @@ module.exports = function (RED) {
         var globalContext = this.context().global;
         globalContext.set("HarmonyFunction","Hold");
         globalContext.set("HarmonyAction",action);
+        globalContext.set("HarmonyDevice",node.activity);
         for (var i = 0; i < node.repeat; i++) {
           node.server.harmony.request('holdAction', 'action=' + action + ':status=hold' + ':timestamp='+node.timestamp)
             .catch(function (err) {
@@ -251,6 +254,33 @@ module.exports = function (RED) {
   }
 
   RED.nodes.registerType('H GetActivities', HarmonyGetActivities)
+
+
+ 
+  function HarmonyGetCommands (n) {
+    RED.nodes.createNode(this, n)
+    var node = this
+
+    node.server = RED.nodes.getNode(n.server)
+   
+    if (!node.server) {
+      node.warn("HarmonyGetCommands: no server");
+      return
+    }
+    node.on('input', function (msg) {
+
+      node.server.harmony.getAvailableCommands()
+        .catch(function (err) {
+          node.send({payload: false})
+          console.log('Error: ' + err)
+        }).then(function (response) {
+          //console.log('Harmony: ' + response)
+          node.send({payload: response})
+        })
+    })
+  }
+
+  RED.nodes.registerType('H GetCommands', HarmonyGetCommands)
 
   function HarmonyObserve (n) {
     RED.nodes.createNode(this, n)
