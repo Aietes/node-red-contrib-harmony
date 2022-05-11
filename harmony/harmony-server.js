@@ -107,7 +107,7 @@ module.exports = function (RED) {
     } else {
       harmonyClient(req.query.ip)
         .catch(function (err) {
-          res.status(500).send('Request failed.')
+          res.status(500).send('Activities1 Request failed.'+err)
         }).then(function (harmony) {
           harmony.getActivities()
             .then(function (acts) {
@@ -122,7 +122,7 @@ module.exports = function (RED) {
             })
             .catch(function (err) {
               harmony.end()
-              res.status(500).send('Request failed.')
+              res.status(500).send('Activities Request failed.'+err)
             })
         })
     }
@@ -160,7 +160,7 @@ module.exports = function (RED) {
             })
         })
         .catch(function (err) {
-          res.status(500).send('Request failed.')
+          res.status(500).send('Commands Request failed.'+err)
         })
     }
   })
@@ -189,7 +189,7 @@ module.exports = function (RED) {
             })
         })
         .catch(function (err) {
-          res.status(500).send('Request failed.')
+          res.status(500).send('Devices Request failed.'+err)
         })
     }
   })
@@ -224,7 +224,7 @@ module.exports = function (RED) {
             })
         })
         .catch(function (err) {
-          res.status(500).send('Request failed.')
+          res.status(500).send('device-commands Request failed.'+err)
         })
     }
   })
