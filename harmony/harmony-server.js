@@ -109,21 +109,25 @@ module.exports = function (RED) {
         .catch(function (err) {
           res.status(500).send('Activities1 Request failed.'+err)
         }).then(function (harmony) {
-          harmony.getActivities()
-            .then(function (acts) {
-              harmony.end()
-              acts = acts.map(function (action) {
-                return {
-                  id: action.id,
-                  label: action.label
-                }
+          if (harmony && typeof harmony.getActivities === 'function') {
+            harmony.getActivities()
+              .then(function (acts) {
+                harmony.end()
+                acts = acts.map(function (action) {
+                  return {
+                    id: action.id,
+                    label: action.label
+                  }
+                })
+                res.status(200).send(JSON.stringify(acts))
               })
-              res.status(200).send(JSON.stringify(acts))
-            })
-            .catch(function (err) {
-              harmony.end()
-              res.status(500).send('Activities Request failed.'+err)
-            })
+              .catch(function (err) {
+                harmony.end()
+                res.status(500).send('Activities Request failed.'+err)
+              })
+          } else {
+            res.status(500).send('Harmony client not initialized.')
+          }
         })
     }
   })
@@ -134,30 +138,34 @@ module.exports = function (RED) {
     } else {
       harmonyClient(req.query.ip)
         .then(function (harmony) {
-          return harmony.getActivities()
-            .then(function (acts) {
-              var act = acts
-                .filter(function (act) {
-                  return act.id === req.query.activity
-                })
-                .pop()
-              var commands = act.controlGroup
-                .map(function (group) {
-                  return group.function
-                })
-                .reduce(function (prev, curr) {
-                  return prev.concat(curr)
-                })
-                .map(function (fn) {
-                  return {action: fn.action, label: fn.label}
-                })
-              harmony.end()
-              res.status(200).send(JSON.stringify(commands))
-            })
-            .catch(function (err) {
-              harmony.end()
-              if (err) throw err
-            })
+          if (harmony && typeof harmony.getActivities === 'function') {
+            return harmony.getActivities()
+              .then(function (acts) {
+                var act = acts
+                  .filter(function (act) {
+                    return act.id === req.query.activity
+                  })
+                  .pop()
+                var commands = act.controlGroup
+                  .map(function (group) {
+                    return group.function
+                  })
+                  .reduce(function (prev, curr) {
+                    return prev.concat(curr)
+                  })
+                  .map(function (fn) {
+                    return {action: fn.action, label: fn.label}
+                  })
+                harmony.end()
+                res.status(200).send(JSON.stringify(commands))
+              })
+              .catch(function (err) {
+                harmony.end()
+                if (err) throw err
+              })
+          } else {
+            res.status(500).send('Harmony client not initialized.')
+          }
         })
         .catch(function (err) {
           res.status(500).send('Commands Request failed.'+err)
@@ -171,22 +179,26 @@ module.exports = function (RED) {
     } else {
       harmonyClient(req.query.ip)
         .then(function (harmony) {
-          return harmony.getAvailableCommands()
-            .then(function (commands) {
-              var devices = commands.device
-                .filter(function (device) {
-                  return device.controlGroup.length > 0
-                })
-                .map(function (device) {
-                  return {id: device.id, label: device.label}
-                })
-              harmony.end()
-              res.status(200).send(JSON.stringify(devices))
-            })
-            .catch(function (err) {
-              harmony.end()
-              if (err) throw err
-            })
+          if (harmony && typeof harmony.getAvailableCommands === 'function') {
+            return harmony.getAvailableCommands()
+              .then(function (commands) {
+                var devices = commands.device
+                  .filter(function (device) {
+                    return device.controlGroup.length > 0
+                  })
+                  .map(function (device) {
+                    return {id: device.id, label: device.label}
+                  })
+                harmony.end()
+                res.status(200).send(JSON.stringify(devices))
+              })
+              .catch(function (err) {
+                harmony.end()
+                if (err) throw err
+              })
+          } else {
+            res.status(500).send('Harmony client not initialized.')
+          }
         })
         .catch(function (err) {
           res.status(500).send('Devices Request failed.'+err)
@@ -200,28 +212,32 @@ module.exports = function (RED) {
     } else {
       harmonyClient(req.query.ip)
         .then(function (harmony) {
-          return harmony.getAvailableCommands()
-            .then(function (commands) {
-              var device = commands.device.filter(function (device) {
-                return device.id === req.query.deviceId
-              }).pop()
-              var deviceCommands = device.controlGroup
-                .map(function (group) {
-                  return group.function
-                })
-                .reduce(function (prev, curr) {
-                  return prev.concat(curr)
-                })
-                .map(function (fn) {
-                  return {action: fn.action, label: fn.label}
-                })
-              harmony.end()
-              res.status(200).send(JSON.stringify(deviceCommands))
-            })
-            .catch(function (err) {
-              harmony.end()
-              if (err) throw err
-            })
+          if (harmony && typeof harmony.getAvailableCommands === 'function') {
+            return harmony.getAvailableCommands()
+              .then(function (commands) {
+                var device = commands.device.filter(function (device) {
+                  return device.id === req.query.deviceId
+                }).pop()
+                var deviceCommands = device.controlGroup
+                  .map(function (group) {
+                    return group.function
+                  })
+                  .reduce(function (prev, curr) {
+                    return prev.concat(curr)
+                  })
+                  .map(function (fn) {
+                    return {action: fn.action, label: fn.label}
+                  })
+                harmony.end()
+                res.status(200).send(JSON.stringify(deviceCommands))
+              })
+              .catch(function (err) {
+                harmony.end()
+                if (err) throw err
+              })
+          } else {
+            res.status(500).send('Harmony client not initialized.')
+          }
         })
         .catch(function (err) {
           res.status(500).send('device-commands Request failed.'+err)
